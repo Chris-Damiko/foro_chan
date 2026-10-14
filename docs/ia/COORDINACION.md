@@ -123,7 +123,7 @@ Reglas:
 
 ### Aprobaciones
 - [x] Humano A (aninayuwoki) aprueba (2026-10-14)
-- [ ] Humano B (mobbu) aprueba
+- [x] Humano B (mobbu) aprueba (2026-10-14)
 
 <!-- Plantilla del acuerdo:
 ### Zonas
