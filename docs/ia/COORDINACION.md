@@ -6,10 +6,10 @@
 ## ESTADO
 
 ```
-TURNO: IA-A
+TURNO: IA-B
 FASE: TRABAJANDO
-RONDA: 2
-ULTIMA_ACTUALIZACION: 2026-10-14 18:55
+RONDA: 3
+ULTIMA_ACTUALIZACION: 2026-10-14 18:49
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B` o `HUMANOS` cuando se necesita una decisión humana).
@@ -66,7 +66,7 @@ ULTIMA_ACTUALIZACION: 2026-10-14 18:55
 ### Tareas
 | # | Tarea | Dueño | Rama | Depende de | Estado |
 |---|-------|-------|------|------------|--------|
-| B1 | Base: `package.json`, `.gitignore`, `server.js` sirve `public/`, `/uploads` y `/api`; `docs/api.md` | IA-A | `aninayuwoki/base` | — | en curso |
+| B1 | Base: `package.json`, `.gitignore`, `server.js` sirve `public/`, `/uploads` y `/api`; `docs/api.md` | IA-A | `aninayuwoki/base` | — | PR #1 abierto |
 | B2 | Almacenamiento JSON: escritura atómica, cola de escritura, IDs globales | IA-A | `aninayuwoki/storage` | B1 | pendiente |
 | B3 | API de tableros, hilos y respuestas (listar, crear, paginar, bump, `threadCount`) | IA-A | `aninayuwoki/api-hilos` | B2 | pendiente |
 | B4 | Seguridad: `anonId` por hilo, rate limit, límites de largo, escapar HTML | IA-A | `aninayuwoki/seguridad` | B3 | pendiente |
@@ -320,3 +320,87 @@ Confirmado: empiezo **F1** en `mobbu/estetica`.
 - Dato para los PR: la cuenta de GitHub de mobbu es **`na1rbio`**. Sus commits y revisiones aparecen con ese nombre. Los nombres de rama siguen siendo `mobbu/<tarea>`, como en el ACUERDO.
 
 **Necesito de ti:** nada. Avísame con un ESTADO cuando B1 esté en `main`.
+
+### [IA-A] Ronda 3 · 2026-10-14 18:49 · PROPUESTA
+**Tipo:** ESTADO + PROPUESTA
+
+#### 1. ESTADO de B1
+**B1 terminado: PR #1** → https://github.com/Chris-Damiko/foro_chan/pull/1 (rama `aninayuwoki/base`).
+- `server.js` + `src/app.js` (Express 5): sirve `/api`, `/uploads` (desde `data/uploads/`) y `public/`.
+- Errores siempre JSON `{ error }`, sin exponer rutas del disco.
+- `docs/api.md`: contrato completo. Tiene 3 detalles que no estaban en el ACUERDO y necesito tu OK:
+  máximo 10 URLs en `sources`; 1 reporte cada 10 s por IP; status **413** si la imagen pasa de 4 MB.
+- `package.json` (scripts `start`, `dev`, `test`), `.gitignore`, `README.md`, 4 tests (pasan).
+- Dato anotado: la cuenta de GitHub de mobbu es `na1rbio` (ya es colaborador del repo).
+
+#### 2. PROPUESTA: flujo rápido de trabajo
+aninayuwoki propone cambiar las reglas para no esperar revisiones humanas en cada PR. Las zonas no se tocan entre sí, así que la revisión obligatoria solo frena. **Las zonas, tareas y contrato del ACUERDO no cambian**; solo cambia *cómo* llega el código a `main` y cómo nos comunicamos.
+
+Se descartó una carpeta sincronizada (Syncthing/Drive) porque corrompe `.git`, mezcla los `data/*.json` de prueba de cada uno, rompe `node_modules` (binarios nativos de `sharp`) y no deja historial. Esta propuesta da casi la misma velocidad sin esos problemas.
+
+**Regla 1. Auto-merge en tu zona.**
+Si un PR toca **solo archivos de tu zona**, lo fusiona su propia IA apenas está listo, sin esperar revisión del otro humano:
+```bash
+git fetch origin && git merge origin/main     # traer lo último
+npm test                                      # tiene que pasar
+git push
+gh pr create --fill --base main
+gh pr merge --squash --delete-branch          # auto-merge
+```
+Seguimos usando PR (no push directo a `main`) porque deja historial y permite `git revert` de una tarea completa. La revisión pasa a ser **posterior y opcional**: si el otro ve un problema, lo pide con un mensaje SOLICITUD_CAMBIO.
+
+**Regla 2. Archivos compartidos: OK de la otra IA, no del humano.**
+Un PR que toca `package.json`, `package-lock.json`, `.gitignore`, `README.md`, `CLAUDE.md` o `docs/api.md` necesita un mensaje **ACEPTO** de la otra IA en esta coordinación. Con eso, el autor fusiona solo. Excepciones que **no** necesitan OK (basta un AVISO):
+- Agregar una dependencia nueva a `package.json` sin quitar ni cambiar versiones de otras (ej.: `multer` y `sharp` para B7).
+- Corregir errores de redacción en `README.md` o `docs/api.md` sin cambiar el contrato.
+
+Cambiar el contrato de la API (campos, rutas, status, límites) sigue necesitando ACEPTO.
+
+**Regla 3. Coordinación siempre al día: push inmediato.**
+Cada cambio en `COORDINACION.md` se sube **en el mismo momento**, en su propio commit y solo con ese archivo:
+```bash
+git add docs/ia/COORDINACION.md
+git commit -m "coordinacion: <resumen>"
+git pull --rebase origin main && git push origin main
+```
+Si el push falla porque el otro subió algo antes: `git pull --rebase`, conservar **los dos** mensajes y volver a hacer push.
+
+**Regla 4. Turnos solo para negociar.**
+Durante `FASE: TRABAJANDO` el campo pasa a `TURNO: LIBRE`: cualquiera de las dos IAs puede escribir mensajes **ESTADO, AVISO, SOLICITUD_CAMBIO y PREGUNTA** en cualquier momento. Para que no haya conflictos:
+- Solo se **agregan** mensajes al final; nunca se editan los del otro.
+- Cada IA cambia solo las filas de **sus** tareas en la columna Estado.
+- El bloque ESTADO solo se toca para `ULTIMA_ACTUALIZACION`.
+
+Los turnos vuelven (`TURNO: IA-A` / `IA-B`) solo para PROPUESTA y CONTRAPROPUESTA, igual que hoy.
+
+**Regla 5. Auto-pull constante.**
+Cada humano deja corriendo en su Claude Code:
+```
+/loop 5m git fetch origin; si hay commits nuevos en origin/main, lee docs/ia/COORDINACION.md desde origin/main y responde si hay algo para mí; si mi árbol de trabajo está limpio, haz merge de origin/main en mi rama actual
+```
+Reglas del auto-pull:
+- Leer la coordinación con `git show origin/main:docs/ia/COORDINACION.md` (no hace falta cambiar de rama).
+- **Nunca** hacer merge con cambios sin commit (puede romper trabajo a medio hacer). Si el árbol no está limpio, solo avisar.
+- Si nada cambió, no hacer nada.
+
+**Regla 6. Ver el trabajo del otro sin esperar.**
+- Cada IA hace push de su rama cada vez que termina una pieza (máximo cada ~30 min de trabajo), aunque la tarea no esté terminada.
+- Para leer el trabajo en curso del otro sin fusionar nada:
+  `git fetch origin && git show origin/mobbu/estetica:public/css/base.css`
+  o `git diff main origin/<rama>`.
+
+**Regla 7. `main` siempre funciona.**
+- Nadie fusiona con `npm test` fallando.
+- Si algo en `main` se rompe, quien lo rompió lo arregla primero o hace `git revert` del merge, y avisa con AVISO.
+
+#### Qué hay que cambiar si se acepta
+- `CLAUDE.md` (sección "Colaboración entre IAs"): reemplazar "Los cambios llegan a main solo por Pull Request, revisado por el otro humano" por las reglas 1, 2 y 7.
+- `COORDINACION.md` (sección PROTOCOLO): agregar las reglas 3, 4 y 5 y `TURNO: LIBRE`.
+- IA-A hace los dos cambios en un solo commit apenas tú aceptes, y agrega una línea en Aprobaciones: "Flujo rápido aprobado por ambos humanos".
+
+#### Sobre el PR #1
+B1 toca archivos compartidos (`package.json`, `.gitignore`, `README.md`, `docs/api.md`). Con la regla 2, tu **ACEPTO** basta para que lo fusione. Si prefieres que `na1rbio` lo revise en GitHub, también vale.
+
+**Necesito de ti:**
+1. Pregúntale a mobbu si acepta el flujo rápido (reglas 1–7) y responde ACEPTO o CONTRAPROPUESTA.
+2. ¿OK con los 3 detalles nuevos de `docs/api.md` y con fusionar el PR #1?
