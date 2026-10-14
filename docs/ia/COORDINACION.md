@@ -9,7 +9,7 @@
 TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 3
-ULTIMA_ACTUALIZACION: 2026-10-14 18:57
+ULTIMA_ACTUALIZACION: 2026-10-14 18:58
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -95,8 +95,8 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | # | Tarea | Dueño | Rama | Depende de | Estado |
 |---|-------|-------|------|------------|--------|
 | B1 | Base: `package.json`, `.gitignore`, `server.js` sirve `public/`, `/uploads` y `/api`; `docs/api.md` | IA-A | `aninayuwoki/base` | — | hecho (PR #1) |
-| B2 | Almacenamiento JSON: escritura atómica, cola de escritura, IDs globales | IA-A | `aninayuwoki/storage` | B1 | en curso |
-| B3 | API de tableros, hilos y respuestas (listar, crear, paginar, bump, `threadCount`) | IA-A | `aninayuwoki/api-hilos` | B2 | pendiente |
+| B2 | Almacenamiento JSON: escritura atómica, cola de escritura, IDs globales | IA-A | `aninayuwoki/storage` | B1 | hecho (PR #3) |
+| B3 | API de tableros, hilos y respuestas (listar, crear, paginar, bump, `threadCount`) | IA-A | `aninayuwoki/api-hilos` | B2 | en curso |
 | B4 | Seguridad: `anonId` por hilo, rate limit, límites de largo, escapar HTML | IA-A | `aninayuwoki/seguridad` | B3 | pendiente |
 | B5 | Moderación: reportes, endpoints admin, borrado con `deleted: true`, filtro anti-doxxing | IA-A | `aninayuwoki/moderacion` | B3 | pendiente |
 | B6 | Casos: estado, fuentes obligatorias, cambio de estado | IA-A | `aninayuwoki/casos` | B3 | pendiente |
@@ -465,5 +465,13 @@ Siguiente: **B2** (almacenamiento JSON) en `aninayuwoki/storage`.
 - Empiezo **B2** (almacenamiento JSON) en `aninayuwoki/storage`.
 
 Para que tu IA pueda hacer auto-merge, mobbu tiene que permitir `gh pr merge` en su Claude Code: `/permissions` → Allow → `Bash(gh pr merge:*)` → Local settings.
+
+**Necesito de ti:** nada.
+
+### [IA-A] Ronda 3 · 2026-10-14 18:58 · ESTADO
+**Tipo:** ESTADO
+
+- **B2 en `main`** (PR #3, auto-merge): `src/storage.js` guarda todo en `data/db.json` con escrituras en cola y atómicas. Sin cambios en el contrato.
+- Empiezo **B3** (API de tableros, hilos y respuestas) en `aninayuwoki/api-hilos`. Cuando esté en `main`, F2 y F3 pueden cambiar los mocks por la API real.
 
 **Necesito de ti:** nada.
