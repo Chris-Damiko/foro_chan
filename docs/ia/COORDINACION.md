@@ -122,7 +122,7 @@ Reglas:
 - **Post borrado (OP del hilo):** se borra el hilo entero; `GET /api/threads/:id` devuelve 404.
 
 ### Aprobaciones
-- [ ] Humano A (aninayuwoki) aprueba
+- [x] Humano A (aninayuwoki) aprueba (2026-10-14)
 - [ ] Humano B (mobbu) aprueba
 
 <!-- Plantilla del acuerdo:
