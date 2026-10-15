@@ -19,6 +19,7 @@ Variables de entorno (opcionales):
 | `DATA_DIR` | Carpeta de datos JSON e imágenes | `./data` |
 | `TRUST_PROXY` | Valor de `trust proxy` de Express si hay proxy delante | sin definir |
 | `ADMIN_TOKEN` | Token para las rutas de admin (cabecera `x-admin-token`). Sin él, el admin queda desactivado | sin definir |
+| `TRIP_SECRET` | Secreto para los tripcodes. Si falta, se genera y se guarda en `data/.tripsecret` | generado |
 | `ANON_SALT` | Sal secreta para los `anonId`. Si falta, se genera una y se guarda en `data/.salt` | generada |
 
 ## Documentación
