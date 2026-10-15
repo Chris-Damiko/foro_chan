@@ -1,6 +1,7 @@
 // Pantalla del sombrero (F9), dos modos:
 // - identidad: guarda "nombre#clave" en este navegador (nunca en el servidor).
 // - admin: POST /api/admin/login → cookie HttpOnly dd_admin.
+import { estatica } from './efectos.js';
 import { entrarAdmin, estadoAdmin, obtenerTableros, salirAdmin } from './api.js';
 import { guardarIdentidad, leerIdentidad, nombreVisible, olvidarIdentidad } from './identidad.js';
 import { el, pintarBarra } from './ui.js';
@@ -129,6 +130,7 @@ function mostrarError(mensaje) {
   error.textContent = mensaje;
   error.hidden = false;
   pulso(icono, 'incognito--error', 600);
+  estatica(0.25, 0.06);
 }
 
 function celebrar() {
