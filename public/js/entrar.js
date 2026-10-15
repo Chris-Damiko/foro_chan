@@ -2,7 +2,6 @@
 // - identidad: guarda "nombre#clave" en este navegador (nunca en el servidor).
 // - admin: POST /api/admin/login → cookie HttpOnly dd_admin.
 import { entrarAdmin, estadoAdmin, obtenerTableros, salirAdmin } from './api.js';
-import { enviando } from './formulario.js';
 import { guardarIdentidad, leerIdentidad, nombreVisible, olvidarIdentidad } from './identidad.js';
 import { el, pintarBarra } from './ui.js';
 
@@ -97,9 +96,14 @@ form.addEventListener('submit', async (evento) => {
   }
 
   if (!clave.value) return mostrarError('Escribe la contraseña de admin.');
-  const restaurar = enviando(form.querySelector('button[type="submit"]'));
+  // La gabardina es el botón: solo cambia el texto, no el dibujo.
+  const boton = form.querySelector('.gabardina');
+  const texto = boton.querySelector('.gabardina__texto');
+  boton.disabled = true;
+  texto.textContent = '…';
   const res = await entrarAdmin(clave.value);
-  restaurar();
+  boton.disabled = false;
+  texto.textContent = 'ENTRAR';
   clave.value = '';
   if (!res.ok) return mostrarError(res.status === 401 ? 'Contraseña incorrecta.' : res.error);
   pintarEstado();
