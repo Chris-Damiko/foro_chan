@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tablero · DearDross</title>
+  <link rel="preload" href="/fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/efectos.css">
+  <script type="module" src="/js/tablero.js"></script>
+</head>
+<body>
+  <div class="vineta" aria-hidden="true"></div>
+
+  <header class="contenedor barra">
+    <a class="barra__logo glitch" href="/">DearDross</a>
+  </header>
+
+  <main class="contenedor entrada">
+    <section class="cabecera-tablero">
+      <h1 class="titulo-tablero" id="titulo">&nbsp;</h1>
+      <p id="descripcion"></p>
+    </section>
+
+    <details class="nuevo-hilo" id="nuevo-hilo">
+      <summary class="btn btn--primario">Nuevo hilo</summary>
+      <form class="formulario" id="form-hilo" novalidate>
+        <div class="campo">
+          <label for="f-titulo">Título</label>
+          <input id="f-titulo" name="title" type="text" maxlength="100" required autocomplete="off">
+          <span class="campo__contador"></span>
+        </div>
+        <div class="campo">
+          <label for="f-cuerpo">Mensaje</label>
+          <textarea id="f-cuerpo" name="body" maxlength="4000" required></textarea>
+          <span class="campo__contador"></span>
+          <span class="campo__ayuda">Empieza una línea con &gt; para greentext. Cita un post con &gt;&gt;número.</span>
+        </div>
+        <div class="campo" id="campo-fuentes" hidden>
+          <label for="f-fuentes">Fuentes</label>
+          <textarea id="f-fuentes" name="sources" rows="3" placeholder="https://..." autocomplete="off"></textarea>
+          <span class="campo__ayuda">Una URL por línea. Obligatorio en Casos (mínimo 1, máximo 10).</span>
+        </div>
+        <div class="campo">
+          <label for="f-imagen">Imagen (opcional)</label>
+          <input id="f-imagen" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
+          <img class="vista-previa" id="vista-previa" alt="Vista previa de la imagen" hidden>
+          <span class="campo__ayuda">JPG, PNG, GIF o WEBP. Máximo 4 MB. Se borran los metadatos (EXIF).</span>
+        </div>
+        <div class="campo">
+          <label for="f-nombre">Nombre (opcional)</label>
+          <input id="f-nombre" name="name" type="text" maxlength="60" autocomplete="off" spellcheck="false" placeholder="Anónimo">
+          <span class="campo__ayuda">Escribe nombre#clave para firmar con un tripcode. La clave no se guarda.</span>
+        </div>
+        <p class="aviso">No publiques datos personales de nadie. Los posts con datos personales se borran.</p>
+        <p class="campo__error" id="error-general" role="alert" hidden></p>
+        <div class="formulario__acciones">
+          <button class="btn btn--primario" type="submit">Publicar</button>
+        </div>
+      </form>
+    </details>
+
+    <section aria-label="Hilos">
+      <div class="catalogo" id="catalogo"></div>
+      <nav class="paginacion" id="paginacion" aria-label="Páginas"></nav>
+    </section>
+  </main>
+
+  <footer class="contenedor pie">DearDross · anónimo · sin cuentas · sin registros de IP</footer>
+</body>
+</html>
