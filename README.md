@@ -18,6 +18,7 @@ Variables de entorno (opcionales):
 | `PORT` | Puerto HTTP | `3000` |
 | `DATA_DIR` | Carpeta de datos JSON e imágenes | `./data` |
 | `TRUST_PROXY` | Valor de `trust proxy` de Express si hay proxy delante | sin definir |
+| `ANON_SALT` | Sal secreta para los `anonId`. Si falta, se genera una y se guarda en `data/.salt` | generada |
 
 ## Documentación
 - `docs/api.md`: contrato de la API.
