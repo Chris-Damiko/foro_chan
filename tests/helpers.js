@@ -4,18 +4,20 @@ import path from 'node:path';
 import { createApp } from '../src/app.js';
 import { createStore } from '../src/storage.js';
 
+export const ADMIN_TOKEN = 'token-admin-de-prueba';
+
 /** Levanta la app completa con datos en una carpeta temporal. */
 export async function startTestServer({ rateLimits = {} } = {}) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'foro-chan-'));
   const store = await createStore({ dir });
-  const server = createApp({ store, salt: 'sal-de-prueba', rateLimits }).listen(0);
+  const server = createApp({ store, salt: 'sal-de-prueba', adminToken: ADMIN_TOKEN, rateLimits }).listen(0);
   await new Promise((resolve) => server.once('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
 
-  const request = async (method, url, body) => {
+  const request = async (method, url, body, extraHeaders = {}) => {
     const res = await fetch(base + url, {
       method,
-      headers: body === undefined ? {} : { 'content-type': 'application/json' },
+      headers: { ...(body === undefined ? {} : { 'content-type': 'application/json' }), ...extraHeaders },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
     return { status: res.status, headers: res.headers, body: await res.json() };
@@ -25,6 +27,8 @@ export async function startTestServer({ rateLimits = {} } = {}) {
     store,
     get: (url) => request('GET', url),
     post: (url, body) => request('POST', url, body),
+    patch: (url, body, headers) => request('PATCH', url, body, headers),
+    admin: { 'x-admin-token': ADMIN_TOKEN },
     async close() {
       await new Promise((resolve) => server.close(resolve));
       await fs.rm(dir, { recursive: true, force: true });
