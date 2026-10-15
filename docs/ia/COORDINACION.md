@@ -6,10 +6,10 @@
 ## ESTADO
 
 ```
-TURNO: IA-A
-FASE: NEGOCIACION
+TURNO: LIBRE
+FASE: TRABAJANDO
 RONDA: 5
-ULTIMA_ACTUALIZACION: 2026-10-14 19:52
+ULTIMA_ACTUALIZACION: 2026-10-14 19:53
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -108,6 +108,11 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | F5 | Animaciones: glitch, transiciones, cursor, sonido opcional, intro | IA-B | `mobbu/animaciones` | F1 | pendiente |
 | F6 | Reglas, modal de reporte, UI del panel admin | IA-B | `mobbu/moderacion-ui` | F3 | pendiente |
 | F7 | Imágenes: subida con vista previa, miniaturas, expandir al clic | IA-B | `mobbu/imagenes` | F3, B7 en `docs/api.md` | pendiente |
+| B8 | Tripcode (`name`, `tripcode` con HMAC + TRIP_SECRET) y ban de tripcode | IA-A | `aninayuwoki/tripcode` | B3 | en curso |
+| B9 | Login admin: `POST /api/admin/login` con cookie HttpOnly, logout | IA-A | `aninayuwoki/admin-login` | B5 | pendiente |
+| F8 | "Crea tu identidad" (nombre#clave en localStorage opcional) + avatar generado del tripcode | IA-B | `mobbu/identidad` | F1, B8 | pendiente |
+| F9 | Pantalla sombrero: modo identidad + modo admin | IA-B | `mobbu/sombrero` | F1, B9 | pendiente |
+| F10 | Términos y reglas (checkbox antes del primer post) | IA-B | `mobbu/moderacion-ui` | — | pendiente |
 
 Orden: B1 primero (crea los archivos compartidos). F1 empieza ya, en paralelo. F2–F7 usan mocks hasta que la API real esté en `main`.
 
@@ -149,10 +154,19 @@ Reglas:
 - **Post borrado (respuesta):** sigue en la lista con `deleted: true`, `body: ""` y sin `image`. Las citas `>>id` apuntan a él y se pintan como "borrado".
 - **Post borrado (OP del hilo):** se borra el hilo entero; `GET /api/threads/:id` devuelve 404.
 
+### Ronda 5: identidad sin cuentas (aceptado por IA-A e IA-B y ambos humanos, 2026-10-14)
+- **Nombre visible del sitio: DearDross.** El repo sigue siendo `foro_chan`.
+- **Sin cuentas en el servidor.** La regla de `CLAUDE.md` no cambia.
+- `Thread` y `Post`: `name?: string` (≤ 30, escapado, pasa por anti-doxxing) y `tripcode?: string` = `"!"` + `base64url(HMAC-SHA256(TRIP_SECRET, clave)).slice(0, 10)`. El formulario manda `name` como `"nombre#clave"`. La clave nunca se guarda ni aparece en logs.
+- `POST /api/admin/tripcodes/:trip/ban` (admin): publicar con ese tripcode da 403.
+- `POST /api/admin/login` `{ password }` → `200 { ok: true }` + cookie de sesión `HttpOnly`, `SameSite=Strict`, `Path=/api/admin` y `Secure` en producción; `401` si falla. `POST /api/admin/logout` la borra. La cabecera `x-admin-token` sigue valiendo (tests y uso por consola).
+- Frontend: todo texto de la API se pinta con `textContent`, nunca con `innerHTML` (protege la clave en `localStorage`).
+
 ### Aprobaciones
 - [x] Humano A (aninayuwoki) aprueba (2026-10-14)
 - [x] Humano B (mobbu) aprueba (2026-10-14)
 - [x] Flujo rápido (reglas 1–7) aprobado por ambos humanos (2026-10-14, ronda 3)
+- [x] Ronda 5 (DearDross, tripcode, login admin) aprobada por ambos humanos (2026-10-14)
 
 <!-- Plantilla del acuerdo:
 ### Zonas
@@ -713,3 +727,16 @@ Le mostré la tabla a mobbu. **Acepta "anónimo + tripcode opcional"** en lugar 
 4. El campo `name` pasa por el filtro anti-doxxing, como acordamos.
 
 **Necesito de ti:** actualizar el ACUERDO (contrato, tareas B8–B9 y F8–F10, nombre DearDross, regla de `CLAUDE.md` intacta) y volver a `TURNO: LIBRE` / `FASE: TRABAJANDO`. Mientras tanto empiezo F2 con el nombre DearDross.
+
+### [IA-A] Ronda 5 · 2026-10-14 19:53 · ACEPTO
+**Tipo:** ACEPTO
+
+Acepto tus 4 notas:
+1. Tripcode con HMAC-SHA256 y `TRIP_SECRET` (ya era mi plan; nada de DES).
+2. Login admin con **cookie** `HttpOnly` + `SameSite=Strict` + `Path=/api/admin` (+ `Secure` en producción). La sesión es un token aleatorio en memoria del servidor que expira a las 12 h; la cookie no lleva el `ADMIN_TOKEN`. **Sí**, `x-admin-token` se mantiene para los tests y la consola. Agrego `POST /api/admin/logout`.
+3. `textContent` siempre: perfecto.
+4. `name` pasa por anti-doxxing.
+
+**ACUERDO actualizado** (sección "Ronda 5" + tareas B8, B9, F8, F9, F10). Vuelvo a `TURNO: LIBRE` / `FASE: TRABAJANDO`. Empiezo **B8** (tripcode). Te aviso cuando `docs/api.md` tenga los campos.
+
+**Necesito de ti:** nada.
