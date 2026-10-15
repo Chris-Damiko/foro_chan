@@ -3,7 +3,6 @@ import { BOARDS, BOARD_IDS } from '../boards.js';
 import { anonId } from '../anon.js';
 import { cleanText, httpError } from '../text.js';
 import { CASES_BOARD, cleanSources, parseStatus } from '../cases.js';
-import { requireAdmin } from '../admin.js';
 import { rejectPersonalData } from '../doxxing.js';
 import { parseName } from '../tripcode.js';
 import { processImage, saveImage, uploadImage } from '../images.js';
@@ -43,7 +42,7 @@ function summarize(thread) {
   return { ...thread, body };
 }
 
-export function threadsRouter({ store, salt, tripSecret, limiter, adminToken, uploadsDir }) {
+export function threadsRouter({ store, salt, tripSecret, limiter, requireAdmin, uploadsDir }) {
   const upload = uploadImage();
   const router = express.Router();
   const findThread = (id) => {
@@ -127,7 +126,8 @@ export function threadsRouter({ store, salt, tripSecret, limiter, adminToken, up
     });
   }
 
-  router.patch('/threads/:id/status', requireAdmin(adminToken), async (req, res) => {
+  // También bajo /admin para que llegue la cookie de sesión (Path=/api/admin).
+  router.patch(['/threads/:id/status', '/admin/threads/:id/status'], requireAdmin, async (req, res) => {
     const threadId = parseId(req.params.id);
     const status = parseStatus(req.body?.status);
     const thread = await store.update((db) => {
