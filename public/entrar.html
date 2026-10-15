@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Entrar · DearDross</title>
+  <link rel="preload" href="/fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/efectos.css">
+  <script type="module" src="/js/entrar.js"></script>
+</head>
+<body>
+  <div class="vineta" aria-hidden="true"></div>
+
+  <header class="contenedor barra">
+    <a class="barra__logo glitch" href="/">DearDross</a>
+  </header>
+
+  <main class="contenedor entrada">
+    <!-- Boceto 02 de mobbu: sombrero arriba, USER y PASSWORD como ojos, la barra con patas como boca. -->
+    <section class="cara" aria-labelledby="titulo-entrar">
+      <h1 id="titulo-entrar" class="sr-only">Entrar</h1>
+      <img class="cara__sombrero" src="/img/sombrero.svg" alt="" width="400" height="180">
+
+      <div class="cara__modos" role="tablist" aria-label="Modo de entrada">
+        <button class="cara__modo" type="button" role="tab" id="tab-identidad" aria-controls="form-entrar" aria-selected="true" data-modo="identidad">identidad</button>
+        <button class="cara__modo" type="button" role="tab" id="tab-admin" aria-controls="form-entrar" aria-selected="false" data-modo="admin">admin</button>
+      </div>
+
+      <form class="cara__form" id="form-entrar" role="tabpanel" novalidate>
+        <div class="cara__ojos">
+          <div class="campo cara__ojo">
+            <input id="e-usuario" type="text" maxlength="30" autocomplete="off" spellcheck="false" aria-describedby="ayuda-entrar">
+            <label for="e-usuario" class="display">USER</label>
+          </div>
+          <div class="campo cara__ojo">
+            <input id="e-clave" type="password" maxlength="100" autocomplete="off">
+            <label for="e-clave" class="display">PASSWORD</label>
+          </div>
+        </div>
+
+        <label class="cara__recordar" id="recordar-fila">
+          <input type="checkbox" id="e-recordar">
+          Recordar en este navegador
+        </label>
+
+        <p class="campo__ayuda cara__ayuda" id="ayuda-entrar"></p>
+        <p class="campo__error" id="e-error" role="alert" hidden></p>
+
+        <button class="cara__boca" type="submit">ENTRAR</button>
+        <div class="cara__patas" aria-hidden="true"></div>
+      </form>
+
+      <div class="cara__estado" id="estado" hidden></div>
+    </section>
+  </main>
+
+  <footer class="contenedor pie">DearDross · anónimo · sin cuentas · sin registros de IP</footer>
+</body>
+</html>

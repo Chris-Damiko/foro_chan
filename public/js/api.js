@@ -92,3 +92,19 @@ export function responder(hiloId, { body = '', name, image }) {
 export function reportar(postId, reason) {
   return enviarJson(`/api/posts/${encodeURIComponent(postId)}/report`, { reason });
 }
+
+// ---------- Admin (cookie HttpOnly dd_admin, Path=/api/admin) ----------
+
+export function entrarAdmin(password) {
+  return enviarJson('/api/admin/login', { password });
+}
+
+export function salirAdmin() {
+  return pedir('/api/admin/logout', { method: 'POST' });
+}
+
+/** true si hay sesión de admin. No hay /me: se prueba con una ruta de solo lectura. */
+export async function estadoAdmin() {
+  const res = await pedir('/api/admin/reports');
+  return res.ok;
+}
