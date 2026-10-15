@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hilo · DearDross</title>
+  <link rel="preload" href="/fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/efectos.css">
+  <script type="module" src="/js/hilo.js"></script>
+</head>
+<body>
+  <div class="vineta" aria-hidden="true"></div>
+
+  <header class="contenedor barra">
+    <a class="barra__logo glitch" href="/">DearDross</a>
+  </header>
+
+  <main class="contenedor entrada">
+    <p class="volver mono"><a id="volver" href="/">[volver]</a></p>
+
+    <div id="disposicion">
+      <div>
+        <div class="pila" id="posts">
+          <div class="esqueleto" style="height: 10rem"></div>
+          <div class="esqueleto" style="height: 5rem"></div>
+        </div>
+
+        <form class="formulario formulario--respuesta" id="form-respuesta" novalidate hidden>
+          <h2 class="panel__titulo">Responder</h2>
+          <div class="campo">
+            <label for="r-cuerpo">Mensaje</label>
+            <textarea id="r-cuerpo" maxlength="4000"></textarea>
+            <span class="campo__contador"></span>
+            <span class="campo__ayuda">&gt; al inicio de línea = greentext. Clic en No.123 para citar.</span>
+          </div>
+          <div class="campo">
+            <label for="r-imagen">Imagen (opcional)</label>
+            <input id="r-imagen" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
+            <img class="vista-previa" id="r-vista-previa" alt="Vista previa de la imagen" hidden>
+          </div>
+          <div class="campo">
+            <label for="r-nombre">Nombre (opcional)</label>
+            <input id="r-nombre" type="text" maxlength="60" autocomplete="off" spellcheck="false" placeholder="Anónimo">
+            <span class="campo__ayuda">nombre#clave para firmar con un tripcode.</span>
+          </div>
+          <p class="campo__error" id="r-error" role="alert" hidden></p>
+          <div class="formulario__acciones">
+            <button class="btn btn--primario" type="submit">Responder</button>
+          </div>
+        </form>
+      </div>
+
+      <aside class="pila" id="panel-caso" hidden>
+        <div class="panel">
+          <p class="panel__titulo">Estado del caso</p>
+          <ol class="linea-tiempo" id="linea-tiempo"></ol>
+        </div>
+        <div class="panel">
+          <p class="panel__titulo">Fuentes</p>
+          <ol class="fuentes" id="fuentes"></ol>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="contenedor pie">DearDross · anónimo · sin cuentas · sin registros de IP</footer>
+</body>
+</html>

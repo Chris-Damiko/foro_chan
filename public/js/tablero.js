@@ -1,13 +1,12 @@
 // Página de tablero: catálogo de hilos, paginación y formulario de nuevo hilo.
 import { crearHilo, obtenerHilos, obtenerTableros } from './api.js';
+import { conectarVistaPrevia, enviando, validarImagen } from './formulario.js';
 import { desescapar } from './texto.js';
 import {
   conectarContador, el, errorDeCampo, insigniaEstado, NOMBRE_SITIO,
   pintarBarra, sinSenal, urlHilo, urlTablero,
 } from './ui.js';
 
-const MAX_IMAGEN = 4 * 1024 * 1024;
-const TIPOS_IMAGEN = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const MAX_FUENTES = 10;
 
 const params = new URLSearchParams(location.search);
@@ -110,26 +109,15 @@ function prepararFormulario() {
 
   form.querySelectorAll('[maxlength]').forEach(conectarContador);
 
-  const inputImagen = document.getElementById('f-imagen');
-  const vistaPrevia = document.getElementById('vista-previa');
-  inputImagen.addEventListener('change', () => {
-    const archivo = inputImagen.files[0];
-    if (vistaPrevia.src) URL.revokeObjectURL(vistaPrevia.src);
-    const error = archivo ? validarImagen(archivo) : null;
-    errorDeCampo(inputImagen.closest('.campo'), error);
-    vistaPrevia.hidden = !archivo || Boolean(error);
-    if (archivo && !error) vistaPrevia.src = URL.createObjectURL(archivo);
-  });
+  conectarVistaPrevia(document.getElementById('f-imagen'), document.getElementById('vista-previa'));
 
   form.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     const datos = leerFormulario(form, esCasos);
     if (!datos) return;
 
-    const boton = form.querySelector('button[type="submit"]');
     const errorGeneral = document.getElementById('error-general');
-    boton.disabled = true;
-    boton.textContent = 'Enviando…';
+    const restaurar = enviando(form.querySelector('button[type="submit"]'));
     errorGeneral.hidden = true;
 
     const res = await crearHilo(tableroId, datos);
@@ -137,8 +125,7 @@ function prepararFormulario() {
       location.assign(urlHilo(res.data.id));
       return;
     }
-    boton.disabled = false;
-    boton.textContent = 'Publicar';
+    restaurar();
     errorGeneral.textContent = res.error;
     errorGeneral.hidden = false;
   });
@@ -184,10 +171,4 @@ function validarFuentes(fuentes) {
     }
   });
   return mala ? `No es una URL válida: ${mala}` : null;
-}
-
-function validarImagen(archivo) {
-  if (!TIPOS_IMAGEN.includes(archivo.type)) return 'Solo JPG, PNG, GIF o WEBP.';
-  if (archivo.size > MAX_IMAGEN) return 'La imagen pesa más de 4 MB.';
-  return null;
 }
