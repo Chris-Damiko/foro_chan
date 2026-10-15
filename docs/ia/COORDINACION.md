@@ -9,7 +9,7 @@
 TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 5
-ULTIMA_ACTUALIZACION: 2026-10-14 21:13
+ULTIMA_ACTUALIZACION: 2026-10-14 21:19
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -106,13 +106,13 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | F3 | Vista de hilo + respuesta + citas `>>id` + greentext | IA-B | `mobbu/hilo` | F1 | hecho (PR #16) |
 | F4 | Vista de Casos: estado, fuentes, línea de tiempo | IA-B | `mobbu/casos` | F3 | hecho (PR #16) |
 | F5 | Animaciones: glitch, transiciones, cursor, sonido opcional, intro | IA-B | `mobbu/animaciones` | F1 | pendiente |
-| F6 | Reglas, modal de reporte, UI del panel admin | IA-B | `mobbu/moderacion-ui` | F3 | pendiente |
+| F6 | Reglas, modal de reporte, UI del panel admin | IA-B | `mobbu/moderacion-ui` | F3 | hecho (PR #19) |
 | F7 | Imágenes: subida con vista previa, miniaturas, expandir al clic | IA-B | `mobbu/imagenes` | F3, B7 en `docs/api.md` | pendiente |
 | B8 | Tripcode (`name`, `tripcode` con HMAC + TRIP_SECRET) y ban de tripcode | IA-A | `aninayuwoki/tripcode` | B3 | hecho (PR #13) |
 | B9 | Login admin: `POST /api/admin/login` con cookie HttpOnly, logout | IA-A | `aninayuwoki/admin-login` | B5 | hecho (PR #14) |
 | F8 | "Crea tu identidad" (nombre#clave en localStorage opcional) + avatar generado del tripcode | IA-B | `mobbu/identidad` | F1, B8 | hecho (PR #17 y #18) |
 | F9 | Pantalla sombrero: modo identidad + modo admin | IA-B | `mobbu/sombrero` | F1, B9 | hecho (PR #17) |
-| F10 | Términos y reglas (checkbox antes del primer post) | IA-B | `mobbu/moderacion-ui` | — | pendiente |
+| F10 | Términos y reglas (checkbox antes del primer post) | IA-B | `mobbu/moderacion-ui` | — | hecho (PR #19) |
 
 Orden: B1 primero (crea los archivos compartidos). F1 empieza ya, en paralelo. F2–F7 usan mocks hasta que la API real esté en `main`.
 
@@ -786,5 +786,18 @@ El backend de la ronda 5 está completo. Sigo disponible para ajustes y revisió
 
 - **F8 terminado** (PR #18): avatar SVG generado a partir del tripcode (5×5 simétrico, colores de la paleta, una fila con glitch). Va delante del nombre en los posts firmados.
 - Me quedan **F5** (animaciones), **F6** (reglas, modal de reporte, panel admin) y **F10** (términos). Sigo con F6 + F10 en `mobbu/moderacion-ui`.
+
+**Necesito de ti:** nada.
+
+### [IA-B] Ronda 5 · 2026-10-14 21:19 · ESTADO
+**Tipo:** ESTADO
+
+- **F6 + F10 en `main`** (PR #19):
+  - `/reglas.html` con reglas y términos, y casilla "Leí y acepto" antes del primer post.
+  - Botón *reportar* en cada post, con un `<dialog>`.
+  - Panel `/admin.html`: reportes, borrar post o hilo, bloquear firma, cambiar el estado de un caso y bloquear o desbloquear tripcodes.
+  - Todo probado contra tu API.
+- **F9 ajustado** por pedido de mobbu: el boceto es el **ícono de incógnito**. USER y PASSWORD son los lentes de unas gafas bajo el sombrero, y ENTRAR con sus líneas es el abrigo.
+- Me queda **F5** (animaciones: glitch aleatorio, intro, transiciones, sonido opcional).
 
 **Necesito de ti:** nada.
