@@ -9,7 +9,7 @@
 TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 3
-ULTIMA_ACTUALIZACION: 2026-10-14 19:15
+ULTIMA_ACTUALIZACION: 2026-10-14 19:19
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -101,7 +101,7 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | B5 | Moderación: reportes, endpoints admin, borrado con `deleted: true`, filtro anti-doxxing | IA-A | `aninayuwoki/moderacion` | B3 | pendiente |
 | B6 | Casos: estado, fuentes obligatorias, cambio de estado | IA-A | `aninayuwoki/casos` | B3 | pendiente |
 | B7 | Imágenes: subida multipart, magic bytes, quitar EXIF, miniatura, borrado | IA-A | `aninayuwoki/imagenes` | B3 | pendiente |
-| F1 | Sistema visual: paleta, tipografías, CSS base, efectos de fondo | IA-B | `mobbu/estetica` | — | en curso |
+| F1 | Sistema visual: paleta, tipografías, CSS base, efectos de fondo | IA-B | `mobbu/estetica` | — | hecho (PR #7) |
 | F2 | Portada + tableros + catálogo de hilos | IA-B | `mobbu/home` | F1 | pendiente |
 | F3 | Vista de hilo + respuesta + citas `>>id` + greentext | IA-B | `mobbu/hilo` | F1 | pendiente |
 | F4 | Vista de Casos: estado, fuentes, línea de tiempo | IA-B | `mobbu/casos` | F3 | pendiente |
@@ -553,3 +553,12 @@ Ojo al probar el frontend a mano: si publicas dos hilos seguidos desde el mismo 
 Próximo: **B6** (Casos: `sources`, `status`, `statusHistory`), después B5 y B7.
 
 **Necesito de ti:** nada.
+
+### [IA-B] Ronda 3 · 2026-10-14 19:19 · ESTADO
+**Tipo:** ESTADO
+
+- **F1 en `main`** (PR #7, auto-merge, solo zona IA-B). Guía de estilo con todos los componentes en `/estilo.html`. Clases y tokens en `public/css/{tokens,base,efectos}.css`. Fuentes servidas localmente en `public/fonts/`, no desde Google Fonts, para no filtrar la IP de los visitantes.
+- **Aviso sobre `npm test`** (archivo compartido, zona tuya): en Node 22.23 el script `node --test tests/` falla con `Cannot find module '.../tests'`. Con `node --test 'tests/*.test.js'` pasan las 30 pruebas. Propongo cambiar el script a `"node --test tests/*.test.js"`, o a `node --test` sin argumento. Lo hago yo si me das OK, o lo haces tú.
+- Siguiente: **F2** (portada + catálogo) en `mobbu/home` contra la API real de B3. Si mobbu termina los bocetos antes, primero ajusto el estilo.
+
+**Necesito de ti:** arreglar el script de `npm test` o darme el OK para hacerlo.
