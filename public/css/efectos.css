@@ -1,0 +1,146 @@
+/* Efectos de fondo VHS (F1): scanlines, grano, banda de tracking, glitch.
+   Todo va en capas fijas con pointer-events: none: nunca bloquea clics.
+   Solo se animan transform, opacity y filter. Con prefers-reduced-motion se apaga todo.
+   Las animaciones con JS (glitch aleatorio, intro, cursor) son de F5. */
+
+/* Scanlines: líneas finas fijas */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 2px,
+    rgb(0 0 0 / 0.18) 2px 3px
+  );
+}
+
+/* Grano: ruido SVG que salta de posición a saltos */
+body::after {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  z-index: 1001;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grano 0.6s steps(6) infinite;
+}
+
+@keyframes grano {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-7%, 4%); }
+  40%  { transform: translate(5%, -6%); }
+  60%  { transform: translate(-3%, 8%); }
+  80%  { transform: translate(8%, 2%); }
+  100% { transform: translate(-5%, -4%); }
+}
+
+/* Banda de tracking: franja clara que baja lenta por la pantalla */
+html::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 18vh;
+  z-index: 1002;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgb(214 210 200 / 0.025) 40%,
+    rgb(214 210 200 / 0.05) 50%,
+    rgb(214 210 200 / 0.025) 60%,
+    transparent
+  );
+  animation: tracking 9s linear infinite;
+}
+
+@keyframes tracking {
+  from { transform: translateY(-20vh); }
+  to   { transform: translateY(120vh); }
+}
+
+/* Viñeta: bordes de pantalla más oscuros, como un televisor viejo */
+.vineta {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.55) 100%);
+}
+
+/* Glitch: desplazamiento cromático breve. Pasa ~0.3 s cada 7 s.
+   F5 puede cambiar --glitch-retraso con JS para que parezca aleatorio. */
+.glitch {
+  animation: glitch 7s steps(1) infinite;
+  animation-delay: var(--glitch-retraso, 0s);
+}
+.glitch:hover,
+.glitch--activo {
+  animation: glitch-corto 0.3s steps(1) 1;
+}
+
+@keyframes glitch {
+  0%, 95.4%, 100% { text-shadow: none; transform: none; }
+  95.5% { text-shadow: -2px 0 var(--c-vhs-cian), 2px 0 var(--c-vhs-rojo); transform: translateX(1px); }
+  96.5% { text-shadow: 2px 0 var(--c-vhs-cian), -2px 0 var(--c-vhs-rojo); transform: translateX(-2px) skewX(-4deg); }
+  97.5% { text-shadow: -1px 0 var(--c-vhs-cian), 1px 0 var(--c-vhs-rojo); transform: none; }
+  98.5% { text-shadow: none; transform: none; }
+}
+@keyframes glitch-corto {
+  0%   { text-shadow: -2px 0 var(--c-vhs-cian), 2px 0 var(--c-vhs-rojo); transform: translateX(1px); }
+  33%  { text-shadow: 2px 0 var(--c-vhs-cian), -2px 0 var(--c-vhs-rojo); transform: translateX(-2px) skewX(-4deg); }
+  66%  { text-shadow: -1px 0 var(--c-vhs-cian), 1px 0 var(--c-vhs-rojo); transform: none; }
+  100% { text-shadow: none; transform: none; }
+}
+
+/* Entrada de página: distorsión de tracking corta y aparición en cascada */
+.entrada > * {
+  animation: entrada var(--dur-media) var(--curva) both;
+}
+.entrada > :nth-child(2) { animation-delay: 40ms; }
+.entrada > :nth-child(3) { animation-delay: 80ms; }
+.entrada > :nth-child(4) { animation-delay: 120ms; }
+.entrada > :nth-child(5) { animation-delay: 160ms; }
+.entrada > :nth-child(n + 6) { animation-delay: 200ms; }
+
+@keyframes entrada {
+  0%   { opacity: 0; transform: translateX(-6px) skewX(6deg); filter: blur(2px); }
+  40%  { opacity: 0.7; transform: translateX(3px) skewX(-2deg); filter: blur(0.5px); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+
+/* Esqueleto de carga: estática que pasa de lado a lado */
+.esqueleto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgb(214 210 200 / 0.06), transparent);
+  animation: estatica 1.4s linear infinite;
+}
+@keyframes estatica {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+/* "Sin señal": parpadeo lento del título */
+.sin-senal__titulo { animation: parpadeo 2.4s steps(1) infinite; }
+@keyframes parpadeo {
+  0%, 100% { opacity: 1; }
+  47% { opacity: 0.35; }
+  50% { opacity: 1; }
+  52% { opacity: 0.6; }
+}
+
+/* Accesibilidad: sin movimiento si el usuario lo pide */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  html::after { display: none; }
+}
