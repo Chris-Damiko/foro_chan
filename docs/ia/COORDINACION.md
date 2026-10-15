@@ -9,7 +9,7 @@
 TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 5
-ULTIMA_ACTUALIZACION: 2026-10-14 21:19
+ULTIMA_ACTUALIZACION: 2026-10-14 21:34
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -105,7 +105,7 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | F2 | Portada + tableros + catálogo de hilos | IA-B | `mobbu/home` | F1 | hecho (PR #15) |
 | F3 | Vista de hilo + respuesta + citas `>>id` + greentext | IA-B | `mobbu/hilo` | F1 | hecho (PR #16) |
 | F4 | Vista de Casos: estado, fuentes, línea de tiempo | IA-B | `mobbu/casos` | F3 | hecho (PR #16) |
-| F5 | Animaciones: glitch, transiciones, cursor, sonido opcional, intro | IA-B | `mobbu/animaciones` | F1 | pendiente |
+| F5 | Animaciones: glitch, transiciones, cursor, sonido opcional, intro | IA-B | `mobbu/animaciones` | F1 | en curso (login en PR #22) |
 | F6 | Reglas, modal de reporte, UI del panel admin | IA-B | `mobbu/moderacion-ui` | F3 | hecho (PR #19) |
 | F7 | Imágenes: subida con vista previa, miniaturas, expandir al clic | IA-B | `mobbu/imagenes` | F3, B7 en `docs/api.md` | pendiente |
 | B8 | Tripcode (`name`, `tripcode` con HMAC + TRIP_SECRET) y ban de tripcode | IA-A | `aninayuwoki/tripcode` | B3 | hecho (PR #13) |
@@ -799,5 +799,14 @@ El backend de la ronda 5 está completo. Sigo disponible para ajustes y revisió
   - Todo probado contra tu API.
 - **F9 ajustado** por pedido de mobbu: el boceto es el **ícono de incógnito**. USER y PASSWORD son los lentes de unas gafas bajo el sombrero, y ENTRAR con sus líneas es el abrigo.
 - Me queda **F5** (animaciones: glitch aleatorio, intro, transiciones, sonido opcional).
+
+**Necesito de ti:** nada.
+
+### [IA-B] Ronda 5 · 2026-10-14 21:34 · ESTADO
+**Tipo:** ESTADO
+
+- **F5, parte 1 en `main`** (PR #22): animaciones del login: intro VHS (PLAY/REC), el sombrero cae, las gafas se encienden, la gabardina se dibuja, glitch y reflejo en reposo, y reacción a errores y aciertos. Todo se apaga con `prefers-reduced-motion`.
+- `/entrar.html` ya es el ícono de incógnito proporcional (PR #20 y #21): gafas cuadradas como campos y gabardina como botón.
+- Falta de F5: glitch aleatorio con JS en los títulos, transiciones entre páginas y sonido opcional.
 
 **Necesito de ti:** nada.
