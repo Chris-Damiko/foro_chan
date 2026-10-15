@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
-import { syncQueridoDross } from '../src/youtube.js';
+import { syncHearted, syncQueridoDross, videosToRefresh } from '../src/youtube.js';
 import { startTestServer } from './helpers.js';
 
 let thumb;
@@ -102,4 +102,70 @@ test('borrar un hilo de video lo vuelve a crear en la próxima sync (el admin lo
   await srv.del(`/api/admin/posts/${t.id}`, srv.admin);
   const again = await syncQueridoDross({ store: srv.store, uploadsDir: srv.uploadsDir, source });
   assert.equal(again.length, 1);
+});
+
+
+function heartSource(byId) {
+  return {
+    async hearted(id) {
+      if (byId[id] instanceof Error) throw byId[id];
+      return byId[id] ?? [];
+    },
+  };
+}
+
+test('corazones: guarda texto escapado, likes y fecha, ordenados; descarta doxxing; sin autor', async () => {
+  const [t] = await syncQueridoDross({ store: srv.store, uploadsDir: srv.uploadsDir, source: fakeSource(VIDEOS.slice(0, 1)) });
+  const n = await syncHearted({
+    store: srv.store,
+    source: heartSource({
+      gU3R44hr3mY: [
+        { text: 'Al que madruga <Dross> lo asusta', likes: 850, at: '2026-08-23T10:00:00.000Z' },
+        { text: 'Video desmonetizado = joya', likes: 11000 },
+        { text: 'mi número es 0991234567', likes: 99999 },
+        { text: '   ', likes: 5 },
+      ],
+    }),
+  });
+  assert.equal(n, 1);
+
+  const { body } = await srv.get(`/api/threads/${t.id}`);
+  const h = body.thread.video.hearted;
+  assert.deepEqual(h.map((c) => c.likes), [11000, 850]);
+  assert.equal(h[1].text, 'Al que madruga &lt;Dross&gt; lo asusta');
+  assert.equal(h[1].at, '2026-08-23T10:00:00.000Z');
+  assert.ok(body.thread.video.heartedAt);
+  assert.deepEqual(Object.keys(h[0]).sort(), ['likes', 'text']);
+  // No cuenta como respuesta ni hace bump.
+  assert.equal(body.thread.replyCount, 0);
+  assert.equal(body.thread.bumpedAt, t.bumpedAt);
+});
+
+test('corazones: video sin corazones queda con []; un error no rompe el resto', async () => {
+  const created = await syncQueridoDross({ store: srv.store, uploadsDir: srv.uploadsDir, source: fakeSource(VIDEOS) });
+  await syncHearted({
+    store: srv.store,
+    source: heartSource({ gU3R44hr3mY: new Error('red caída'), _UqxoLmydas: [] }),
+  });
+  const byVideo = Object.fromEntries(srv.store.data.threads.map((t) => [t.video.id, t.video]));
+  assert.deepEqual(byVideo._UqxoLmydas.hearted, []);
+  assert.equal(byVideo.gU3R44hr3mY.hearted, undefined);
+  assert.equal(created.length, 2);
+});
+
+test('videosToRefresh: nunca leídos, los 5 más nuevos y los de hace más de una semana', () => {
+  const now = Date.parse('2026-10-14T00:00:00Z');
+  const mk = (id, day, heartedAt) => ({
+    id,
+    createdAt: '2026-10-14T00:00:00Z',
+    video: { id: `v${id}`, publishedAt: `2026-${String(day).padStart(2, '0')}-01T00:00:00Z`, heartedAt },
+  });
+  const fresh = '2026-10-13T00:00:00Z';
+  const old = '2026-09-01T00:00:00Z';
+  const threads = [
+    mk(1, 1, fresh), mk(2, 2, fresh), mk(3, 3, old), mk(4, 4, undefined),
+    mk(5, 5, fresh), mk(6, 6, fresh), mk(7, 7, fresh), mk(8, 8, fresh), mk(9, 9, fresh),
+    { id: 10, board: 'conf' },
+  ];
+  assert.deepEqual(videosToRefresh(threads, now).map((t) => t.id), [3, 4, 5, 6, 7, 8, 9]);
 });

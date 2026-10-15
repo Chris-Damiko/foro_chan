@@ -34,3 +34,4 @@ El tablero principal (`qd`) tiene un hilo por cada video del canal de Dross con 
 - Requiere [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) instalado en el servidor. Sin él, el foro funciona igual pero no crea hilos de videos.
 - Al arrancar, el servidor revisa todo el canal; después revisa los últimos 30 videos cada 6 h.
 - `npm run importar:videos` hace la importación completa **con el servidor detenido**.
+- Comentarios con corazón de Dross: después de cada sincronización se leen los de los videos nunca revisados, los 5 más nuevos y los revisados hace más de una semana. La primera vez tarda unos 30–40 min en segundo plano. No se guarda el autor de los comentarios.

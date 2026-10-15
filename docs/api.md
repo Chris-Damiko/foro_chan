@@ -77,6 +77,11 @@ type Thread = {
 //   system: true
 //   video: { id: string; url: string; publishedAt?: string; thumbUrl?: string }
 //   video.url NO viene escapada (va en href). thumbUrl es local: /uploads/yt/<id>.jpg
+//   video.hearted?: { text: string; likes: number; at?: string }[]
+//       comentarios de YouTube con corazón de Dross, de más a menos likes. text escapado como body.
+//       Sin autor (no se guarda quién comentó). at es aproximada ("hace 1 mes" en YouTube).
+//       Sin el campo = todavía no se revisó; [] = revisado, sin corazones.
+//   video.heartedAt?: string   (última revisión)
 
 type ThreadSummary = Thread;  // igual, pero body recortado a 300 caracteres
 

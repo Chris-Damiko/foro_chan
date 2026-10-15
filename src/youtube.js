@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 import sharp from 'sharp';
 import { VIDEO_BOARD } from './boards.js';
 import { escapeHtml } from './text.js';
+import { findPersonalData } from './doxxing.js';
 
 const run = promisify(execFile);
 
@@ -42,6 +43,29 @@ export function ytdlpSource({ bin = process.env.YTDLP_PATH || 'yt-dlp', channelU
       } catch {
         return undefined;
       }
+    },
+
+    /**
+     * Comentarios principales con corazón del creador: [{ text, likes, at? }].
+     * Se descarta todo lo que identifica a quien comentó (nombre, foto, canal).
+     */
+    async hearted(id) {
+      const { stdout } = await run(
+        bin,
+        [
+          '--skip-download', '--write-comments', '--dump-single-json',
+          '--extractor-args', 'youtube:max_comments=all,all,0,0;comment_sort=top',
+          `https://www.youtube.com/watch?v=${id}`,
+        ],
+        { maxBuffer: 512 * 1024 * 1024, timeout: 15 * 60_000 },
+      );
+      return (JSON.parse(stdout).comments ?? [])
+        .filter((c) => c.is_favorited && c.parent === 'root')
+        .map((c) => ({
+          text: String(c.text ?? ''),
+          likes: Number(c.like_count) || 0,
+          ...(c.timestamp && { at: new Date(c.timestamp * 1000).toISOString() }),
+        }));
     },
 
     /** Bytes de la miniatura publicada por YouTube. */
@@ -121,6 +145,60 @@ export async function syncQueridoDross({ store, uploadsDir, source = ytdlpSource
   return created;
 }
 
+const MAX_HEARTED_TEXT = 2000;
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const RECENT_VIDEOS = 5;
+
+/** Hilos de video cuyos corazones hay que (re)leer: nunca leídos, los 5 más nuevos, o leídos hace más de una semana. */
+export function videosToRefresh(threads, now = Date.now()) {
+  const videos = threads.filter((t) => t.video);
+  const recent = new Set(
+    [...videos]
+      .sort((a, b) => (b.video.publishedAt ?? b.createdAt).localeCompare(a.video.publishedAt ?? a.createdAt))
+      .slice(0, RECENT_VIDEOS)
+      .map((t) => t.id),
+  );
+  return videos.filter(
+    (t) => !t.video.heartedAt || recent.has(t.id) || now - Date.parse(t.video.heartedAt) > WEEK_MS,
+  );
+}
+
+/**
+ * Lee los comentarios con corazón de Dross y los guarda en thread.video.hearted.
+ * Sin nombre de autor; texto escapado; los que parecen tener teléfono o email se descartan.
+ */
+export async function syncHearted({ store, source = ytdlpSource(), threadIds, log = () => {} }) {
+  const targets = threadIds
+    ? store.data.threads.filter((t) => t.video && threadIds.includes(t.id))
+    : videosToRefresh(store.data.threads);
+  let updated = 0;
+
+  for (const t of targets) {
+    let comments;
+    try {
+      comments = await source.hearted(t.video.id);
+    } catch (err) {
+      log(`Sin comentarios para ${t.video.id}: ${err.message}`);
+      continue;
+    }
+    const hearted = comments
+      .map((c) => ({ ...c, text: c.text.trim().slice(0, MAX_HEARTED_TEXT) }))
+      .filter((c) => c.text && !findPersonalData(c.text))
+      .map((c) => ({ ...c, text: escapeHtml(c.text) }))
+      .sort((a, b) => b.likes - a.likes);
+
+    await store.update((db) => {
+      const thread = db.threads.find((x) => x.id === t.id);
+      if (!thread) return; // el admin lo borró mientras leíamos
+      thread.video.hearted = hearted;
+      thread.video.heartedAt = new Date().toISOString();
+    });
+    updated += 1;
+    log(`Hilo ${t.id}: ${hearted.length} comentarios con corazón`);
+  }
+  return updated;
+}
+
 /**
  * Sincroniza al arrancar (todo el canal) y después cada `everyMs` (solo los últimos 30 videos).
  * Si yt-dlp no está instalado, avisa una vez y no hace nada más.
@@ -135,6 +213,7 @@ export function startVideoSync({ store, uploadsDir, everyMs = 6 * 60 * 60 * 1000
     try {
       const created = await syncQueridoDross({ store, uploadsDir, source, limit, log });
       if (created.length) log(`${created.length} hilos nuevos`);
+      await syncHearted({ store, source, log });
     } catch (err) {
       log(err.code === 'ENOENT' ? 'yt-dlp no está instalado: no se sincronizan videos.' : `Error: ${err.message}`);
       if (err.code === 'ENOENT') clearInterval(timer);
