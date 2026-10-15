@@ -96,6 +96,13 @@ function tarjetaVideo(video) {
   );
 }
 
+const formatoMes = new Intl.DateTimeFormat('es', { month: 'short', year: 'numeric' });
+
+/** La fecha de un comentario es aproximada (YouTube da "hace 1 mes"): solo mes y año. */
+function mesAnio(iso) {
+  return formatoMes.format(new Date(iso));
+}
+
 /**
  * Comentarios de YouTube a los que Dross dio corazón (F12). Sin nombre ni foto de quien
  * comentó (lo decide el backend); el texto llega escapado y se pinta como texto.
@@ -119,7 +126,7 @@ function corazones(video) {
       el('p', { class: 'corazon__texto' }, desescapar(c.text)),
       el('p', { class: 'meta' },
         `${c.likes.toLocaleString('es')} ${c.likes === 1 ? 'like' : 'likes'}`,
-        c.at ? ` · ${fechaCorta(c.at).split(' ')[0]}` : ''),
+        c.at ? ` · ${mesAnio(c.at)}` : ''),
     ))));
   if (video.heartedAt) seccion.append(el('p', { class: 'meta corazones__revisado' }, `Revisado el ${fechaCorta(video.heartedAt)}`));
   return seccion;
