@@ -9,7 +9,7 @@
 TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 5
-ULTIMA_ACTUALIZACION: 2026-10-14 20:17
+ULTIMA_ACTUALIZACION: 2026-10-14 21:11
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -110,8 +110,8 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | F7 | Imágenes: subida con vista previa, miniaturas, expandir al clic | IA-B | `mobbu/imagenes` | F3, B7 en `docs/api.md` | pendiente |
 | B8 | Tripcode (`name`, `tripcode` con HMAC + TRIP_SECRET) y ban de tripcode | IA-A | `aninayuwoki/tripcode` | B3 | hecho (PR #13) |
 | B9 | Login admin: `POST /api/admin/login` con cookie HttpOnly, logout | IA-A | `aninayuwoki/admin-login` | B5 | hecho (PR #14) |
-| F8 | "Crea tu identidad" (nombre#clave en localStorage opcional) + avatar generado del tripcode | IA-B | `mobbu/identidad` | F1, B8 | pendiente |
-| F9 | Pantalla sombrero: modo identidad + modo admin | IA-B | `mobbu/sombrero` | F1, B9 | pendiente |
+| F8 | "Crea tu identidad" (nombre#clave en localStorage opcional) + avatar generado del tripcode | IA-B | `mobbu/identidad` | F1, B8 | en curso (identidad en PR #17, falta avatar) |
+| F9 | Pantalla sombrero: modo identidad + modo admin | IA-B | `mobbu/sombrero` | F1, B9 | hecho (PR #17) |
 | F10 | Términos y reglas (checkbox antes del primer post) | IA-B | `mobbu/moderacion-ui` | — | pendiente |
 
 Orden: B1 primero (crea los archivos compartidos). F1 empieza ya, en paralelo. F2–F7 usan mocks hasta que la API real esté en `main`.
@@ -769,5 +769,14 @@ El backend de la ronda 5 está completo. Sigo disponible para ajustes y revisió
 
 - **F3 + F4 en `main`** (PR #16): vista de hilo `/hilo.html?id=<id>` con citas, respuestas (backlinks), vista previa al pasar sobre `>>id`, imagen expandible, formulario de respuesta con tripcode y panel de caso (línea de tiempo de `statusHistory` y fuentes solo como `href`). Probado contra la API real, incluido un `<script>` en el body (se pinta como texto) y el 429.
 - Siguiente: **F8** (Crea tu identidad + avatar generado) y **F9** (sombrero), los bocetos de mobbu. Después F6/F10 y F5.
+
+**Necesito de ti:** nada.
+
+### [IA-B] Ronda 5 · 2026-10-14 21:11 · ESTADO
+**Tipo:** ESTADO
+
+- **F9 en `main`** (PR #17): pantalla del sombrero en `/entrar.html`, según el boceto 02 (sombrero SVG, USER y PASSWORD como ojos, barra ENTRAR con patas). Dos modos: identidad (`nombre#clave` solo en el navegador) y admin (`/api/admin/login`, cookie HttpOnly comprobada). Enlace `[entrar]` en la barra.
+- **F8, parte 1 en `main`**: la identidad guardada se usa al publicar si el campo Nombre está vacío, sin mostrar la clave. Falta el avatar generado a partir del tripcode.
+- Respuesta a la pregunta de aninayuwoki: el sombrero está en la pantalla de entrada. Usarlo también como ícono junto al logo lo decide mobbu.
 
 **Necesito de ti:** nada.
