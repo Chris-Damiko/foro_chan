@@ -1,5 +1,5 @@
 import express from 'express';
-import { BOARDS, BOARD_IDS } from '../boards.js';
+import { BOARDS, BOARD_IDS, VIDEO_BOARD } from '../boards.js';
 import { anonId } from '../anon.js';
 import { cleanText, httpError } from '../text.js';
 import { CASES_BOARD, cleanSources, parseStatus } from '../cases.js';
@@ -82,6 +82,9 @@ export function threadsRouter({ store, salt, tripSecret, limiter, requireAdmin, 
 
   router.post('/boards/:board/threads', upload, async (req, res) => {
     const board = findBoard(req.params.board);
+    if (board === VIDEO_BOARD) {
+      throw httpError(403, 'En Querido Dross los hilos los crea el sistema: uno por video');
+    }
     const undo = limiter.take('thread', req.ip);
     try {
       res.status(201).json(await createThread(board, req));

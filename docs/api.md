@@ -27,7 +27,7 @@ Estado de implementación: la columna **Tarea** dice qué tarea del ACUERDO impl
 
 ```ts
 type Board = {
-  id: string;            // "conf" | "casos" | "gen"
+  id: string;            // "qd" | "conf" | "casos" | "gen"  ("qd" = Querido Dross, el principal, siempre primero)
   name: string;
   description: string;
   threadCount: number;
@@ -72,6 +72,11 @@ type Thread = {
   statusHistory?: { status: "abierto" | "en_revision" | "cerrado"; at: string }[];
                          // solo "casos", orden cronológico; el primero es "abierto" con at = createdAt
 };
+
+// Solo en hilos del tablero "qd" (creados por el sistema, uno por video):
+//   system: true
+//   video: { id: string; url: string; publishedAt?: string; thumbUrl?: string }
+//   video.url NO viene escapada (va en href). thumbUrl es local: /uploads/yt/<id>.jpg
 
 type ThreadSummary = Thread;  // igual, pero body recortado a 300 caracteres
 
@@ -172,6 +177,8 @@ Crea un hilo. Dos formatos:
 | `sources` | texto con JSON de un array, ej. `["https://a.com","https://b.com"]` |
 | `name` | texto, opcional (`"nombre#clave"`) |
 | `image` | archivo (opcional) |
+
+En el tablero `qd` no se pueden crear hilos: `403` `"En Querido Dross los hilos los crea el sistema: uno por video"`. Sí se puede responder.
 
 En el tablero `casos`, `sources` es obligatorio (mínimo 1) y el hilo nace con `status: "abierto"` y `statusHistory: [{ "status": "abierto", "at": createdAt }]`.
 

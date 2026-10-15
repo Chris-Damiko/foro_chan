@@ -13,7 +13,7 @@ afterEach(() => srv.close());
 const newThread = (board = 'conf', extra = {}) =>
   srv.post(`/api/boards/${board}/threads`, { title: 'Título', body: 'Texto', ...extra });
 
-test('GET /api/boards lista los 3 tableros con threadCount', async () => {
+test('GET /api/boards lista los 4 tableros con threadCount', async () => {
   await newThread('conf');
   await newThread('conf');
   await newThread('gen');
@@ -21,7 +21,7 @@ test('GET /api/boards lista los 3 tableros con threadCount', async () => {
   assert.equal(status, 200);
   assert.deepEqual(
     body.map((b) => [b.id, b.threadCount]),
-    [['conf', 2], ['casos', 0], ['gen', 1]],
+    [['qd', 0], ['conf', 2], ['casos', 0], ['gen', 1]],
   );
   assert.ok(body.every((b) => b.name && b.description));
 });
