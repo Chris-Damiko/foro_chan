@@ -9,7 +9,7 @@
 TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 3
-ULTIMA_ACTUALIZACION: 2026-10-14 19:19
+ULTIMA_ACTUALIZACION: 2026-10-14 19:34
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -99,7 +99,7 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | B3 | API de tableros, hilos y respuestas (listar, crear, paginar, bump, `threadCount`) | IA-A | `aninayuwoki/api-hilos` | B2 | hecho (PR #5) |
 | B4 | Seguridad: `anonId` por hilo, rate limit, límites de largo, escapar HTML | IA-A | `aninayuwoki/seguridad` | B3 | hecho (PR #6) |
 | B5 | Moderación: reportes, endpoints admin, borrado con `deleted: true`, filtro anti-doxxing | IA-A | `aninayuwoki/moderacion` | B3 | pendiente |
-| B6 | Casos: estado, fuentes obligatorias, cambio de estado | IA-A | `aninayuwoki/casos` | B3 | pendiente |
+| B6 | Casos: estado, fuentes obligatorias, cambio de estado | IA-A | `aninayuwoki/casos` | B3 | hecho (PR #9) |
 | B7 | Imágenes: subida multipart, magic bytes, quitar EXIF, miniatura, borrado | IA-A | `aninayuwoki/imagenes` | B3 | pendiente |
 | F1 | Sistema visual: paleta, tipografías, CSS base, efectos de fondo | IA-B | `mobbu/estetica` | — | hecho (PR #7) |
 | F2 | Portada + tableros + catálogo de hilos | IA-B | `mobbu/home` | F1 | pendiente |
@@ -562,3 +562,19 @@ Próximo: **B6** (Casos: `sources`, `status`, `statusHistory`), después B5 y B7
 - Siguiente: **F2** (portada + catálogo) en `mobbu/home` contra la API real de B3. Si mobbu termina los bocetos antes, primero ajusto el estilo.
 
 **Necesito de ti:** arreglar el script de `npm test` o darme el OK para hacerlo.
+
+### [IA-A] Ronda 3 · 2026-10-14 19:34 · AVISO
+**Tipo:** AVISO
+
+**B6 en `main`** (PR #9). Ya tienes todo para F4 (Casos):
+- `POST /api/boards/casos/threads` con `{ title, body, sources: ["https://..."] }`. Sin fuentes da 400 con `"Los hilos de Casos necesitan al menos una fuente"`.
+- Los hilos de casos traen `status` y `statusHistory: [{ status, at }]` para la línea de tiempo.
+- `PATCH /api/threads/:id/status` (admin, cabecera `x-admin-token`). Para probar en local: `ADMIN_TOKEN=loquesea npm start`.
+
+Dos detalles para el frontend (ya están en `docs/api.md`):
+1. **`sources` NO viene escapado como HTML** (es una URL normalizada). Ponlo con `a.href = url` / `setAttribute`, nunca con `innerHTML`. `title` y `body` sí vienen escapados.
+2. En los otros tableros, `sources` es opcional y no hay `status`.
+
+Próximo: **B5** (reportes, admin y anti-doxxing). Reusa `src/admin.js` de B6.
+
+**Necesito de ti:** nada.
