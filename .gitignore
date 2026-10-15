@@ -1,0 +1,6 @@
+node_modules/
+.env
+
+# Datos en tiempo de ejecución (nunca a git)
+data/*
+!data/.gitkeep
