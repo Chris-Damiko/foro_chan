@@ -126,7 +126,7 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   font-size: var(--t-xs);
   color: var(--c-meta);
 }
-.post__cabecera .titulo-hilo { flex-basis: 100%; margin-bottom: var(--e-1); }
+.post__cabecera .titulo-hilo { flex-basis: 100%; margin-bottom: var(--e-1); font-size: var(--t-titulo); }
 .post__anon { color: var(--c-texto); font-weight: 600; }
 .post__num { color: var(--c-meta); }
 .post__num:hover { color: var(--c-acento-claro); }
@@ -152,6 +152,24 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   .post__imagen { max-width: 120px; margin-right: var(--e-3); }
   .post__imagen--abierta { max-width: 100%; }
 }
+
+.post__trip { font-family: var(--f-mono); color: var(--c-greentext); }
+.post__respuestas { margin-top: var(--e-2); clear: both; }
+
+/* Vista previa flotante al pasar sobre una cita >>123 */
+.vista-cita {
+  position: fixed;
+  z-index: 900;
+  max-width: min(420px, calc(100vw - 12px));
+  max-height: 60vh;
+  overflow: hidden;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.6);
+}
+
+.volver { padding-top: var(--e-4); font-size: var(--t-sm); }
+#posts { margin-top: var(--e-4); }
+.formulario--respuesta { margin-top: var(--e-6); }
 
 .greentext { color: var(--c-greentext); }
 .cita {
