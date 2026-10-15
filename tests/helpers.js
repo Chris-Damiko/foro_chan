@@ -28,6 +28,8 @@ export async function startTestServer({ rateLimits = {} } = {}) {
     get: (url) => request('GET', url),
     post: (url, body) => request('POST', url, body),
     patch: (url, body, headers) => request('PATCH', url, body, headers),
+    del: (url, headers) => request('DELETE', url, undefined, headers),
+    getAdmin: (url) => request('GET', url, undefined, { 'x-admin-token': ADMIN_TOKEN }),
     admin: { 'x-admin-token': ADMIN_TOKEN },
     async close() {
       await new Promise((resolve) => server.close(resolve));

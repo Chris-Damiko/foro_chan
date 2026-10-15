@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { threadsRouter } from './routes/threads.js';
+import { moderationRouter } from './routes/moderation.js';
 import { createRateLimiter, DEFAULT_LIMITS } from './rateLimit.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -45,7 +46,10 @@ export function createApp({ store, salt, adminToken, rateLimits = DEFAULT_LIMITS
     res.json({ ok: true });
   });
   const limiter = createRateLimiter(rateLimits);
-  if (store) api.use(threadsRouter({ store, salt, limiter, adminToken }));
+  if (store) {
+    api.use(threadsRouter({ store, salt, limiter, adminToken }));
+    api.use(moderationRouter({ store, limiter, adminToken }));
+  }
   api.use((req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });
   });

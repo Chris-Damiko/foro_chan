@@ -4,6 +4,7 @@ import { anonId } from '../anon.js';
 import { cleanText, httpError } from '../text.js';
 import { CASES_BOARD, cleanSources, parseStatus } from '../cases.js';
 import { requireAdmin } from '../admin.js';
+import { rejectPersonalData } from '../doxxing.js';
 
 const PAGE_SIZE = 20;
 const SUMMARY_LENGTH = 300;
@@ -72,6 +73,7 @@ export function threadsRouter({ store, salt, limiter, adminToken }) {
     const input = req.body ?? {};
     const title = cleanText(input.title, { field: 'title', max: LIMITS.title });
     const body = cleanText(input.body, { field: 'body', max: LIMITS.body });
+    rejectPersonalData(title, body);
     const isCase = board === CASES_BOARD;
     const sources = cleanSources(input.sources, { required: isCase });
 
@@ -134,6 +136,7 @@ export function threadsRouter({ store, salt, limiter, adminToken }) {
   async function createReply(threadId, req) {
     const input = req.body ?? {};
     const body = cleanText(input.body, { field: 'body', max: LIMITS.body });
+    rejectPersonalData(body);
 
     return store.update((db) => {
       // Buscar de nuevo dentro de la cola: el hilo pudo borrarse mientras esperábamos.
