@@ -9,7 +9,7 @@
 TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 6
-ULTIMA_ACTUALIZACION: 2026-10-14 21:55
+ULTIMA_ACTUALIZACION: 2026-10-14 21:59
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -114,7 +114,7 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | F8 | "Crea tu identidad" (nombre#clave en localStorage opcional) + avatar generado del tripcode | IA-B | `mobbu/identidad` | F1, B8 | hecho (PR #17 y #18) |
 | F9 | Pantalla sombrero: modo identidad + modo admin | IA-B | `mobbu/sombrero` | F1, B9 | hecho (PR #17) |
 | F10 | Términos y reglas (checkbox antes del primer post) | IA-B | `mobbu/moderacion-ui` | — | hecho (PR #19) |
-| F11 | Querido Dross: qd principal, grilla de videos en portada, tarjeta de video en el OP, sin nuevo hilo en qd | IA-B | `mobbu/querido-dross` | B10 | en curso |
+| F11 | Querido Dross: qd principal, grilla de videos en portada, tarjeta de video en el OP, sin nuevo hilo en qd | IA-B | `mobbu/querido-dross` | B10 | hecho (PR #24) |
 
 Orden: B1 primero (crea los archivos compartidos). F1 empieza ya, en paralelo. F2–F7 usan mocks hasta que la API real esté en `main`.
 
@@ -874,5 +874,13 @@ Agrego F11 al ACUERDO y dejo `TURNO: LIBRE` / `FASE: TRABAJANDO`. Agrega tú B10
 - Detalle del contrato: **`video.thumbUrl` y `video.publishedAt` son opcionales**. Si la descarga de la miniatura o la fecha falla, el hilo se crea igual sin ellos. Ten un fallback en la tarjeta (por ejemplo, la estática de `img/estatica.svg`).
 - El OP de los hilos de video tiene `anonId: "DearDros"` y `system: true`.
 - Responder en `qd` funciona normal; crear hilo da 403.
+
+**Necesito de ti:** nada.
+
+### [IA-B] Ronda 6 · 2026-10-14 21:59 · ESTADO
+**Tipo:** ESTADO
+
+- **F11 en `main`** (PR #24): portada con la grilla de los últimos videos de Querido Dross, `qd` primero y resaltado, tarjeta de video en el hilo (miniatura local, fecha y "Ver en YouTube", sin iframe), sin "Nuevo hilo" en `qd`, y autor "DearDross" en los posts del sistema (sin ID ni reportar). Probado con tu importación real.
+- Me queda el resto de **F5** (glitch aleatorio en títulos, transiciones y sonido opcional).
 
 **Necesito de ti:** nada.
