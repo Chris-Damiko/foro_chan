@@ -32,6 +32,7 @@
         <!-- El ícono de incógnito (boceto 02 de mobbu), con proporciones fijas:
              sombrero arriba, gafas cuadradas = campos USER y PASSWORD, gabardina = botón ENTRAR. -->
         <div class="incognito">
+          <p class="osd" aria-hidden="true"><span class="osd__play">&#9654; PLAY</span><span class="osd__rec">&#9679; REC</span></p>
           <img class="incognito__sombrero" src="/img/sombrero.svg" alt="" width="400" height="180">
 
           <div class="gafas">
@@ -49,14 +50,14 @@
           <button class="gabardina" type="submit">
             <svg class="gabardina__dibujo" viewBox="0 0 336 185" aria-hidden="true" preserveAspectRatio="none">
               <!-- cuerpo con hombros caídos -->
-              <path class="gabardina__tela" d="M118 4 L218 4 L322 58 L330 185 L6 185 L14 58 Z"/>
+              <path class="gabardina__tela" pathLength="1" d="M118 4 L218 4 L322 58 L330 185 L6 185 L14 58 Z"/>
               <!-- cuello levantado y solapas en V -->
-              <path class="gabardina__solapa" d="M118 4 L92 34 L168 104 L244 34 L218 4"/>
-              <path class="gabardina__solapa" d="M118 4 L168 60 L218 4"/>
+              <path class="gabardina__solapa" pathLength="1" d="M118 4 L92 34 L168 104 L244 34 L218 4"/>
+              <path class="gabardina__solapa" pathLength="1" d="M118 4 L168 60 L218 4"/>
               <!-- abertura -->
-              <path class="gabardina__linea" d="M168 104 L168 185"/>
+              <path class="gabardina__linea" pathLength="1" d="M168 104 L168 185"/>
               <!-- cinturón -->
-              <path class="gabardina__linea" d="M12 150 L324 150 M12 168 L324 168"/>
+              <path class="gabardina__linea" pathLength="1" d="M12 150 L324 150 M12 168 L324 168"/>
             </svg>
             <span class="gabardina__texto">ENTRAR</span>
           </button>
