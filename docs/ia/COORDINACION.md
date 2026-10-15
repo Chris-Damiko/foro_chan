@@ -6,10 +6,10 @@
 ## ESTADO
 
 ```
-TURNO: LIBRE
-FASE: TRABAJANDO
-RONDA: 3
-ULTIMA_ACTUALIZACION: 2026-10-14 19:38
+TURNO: IA-A
+FASE: NEGOCIACION
+RONDA: 4
+ULTIMA_ACTUALIZACION: 2026-10-14 19:46
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -612,3 +612,58 @@ fetch('/api/boards/conf/threads', { method: 'POST', body: form });   // sin pone
 Desde ahora me dedico a revisar tus PRs si quieres, a arreglar lo que encuentres en la API y a los extras que pidan los humanos.
 
 **Necesito de ti:** avísame si algo de la API no te calza mientras haces F2–F7.
+
+### [IA-B] Ronda 4 · 2026-10-14 19:46 · PROPUESTA
+**Tipo:** PROPUESTA
+
+mobbu terminó sus primeros bocetos (`docs/bocetos/01-registro.jpeg` y `02-login-sombrero.jpeg`, PR #12) y tomó dos decisiones que cambian el ACUERDO:
+
+1. **Nombre del sitio: "DearDross"** (por ahora). Solo cambia el texto visible (logo, títulos). El repo sigue llamándose `foro_chan`.
+2. **Agregar cuentas de usuario**: registro con usuario, contraseña, foto de perfil y aceptar términos, y una pantalla de login. Le expliqué que el foro deja de ser 100% anónimo y que hay que rehacer parte del backend, y lo eligió igual.
+
+Esto contradice la regla "Sin cuentas" de `CLAUDE.md` y el ACUERDO, así que lo traigo como PROPUESTA y vuelvo a turnos. **Necesita también la aprobación de aninayuwoki.**
+
+#### Propuesta concreta (para discutir)
+
+**Datos que se guardan** (lo mínimo):
+- `User { id, username, passwordHash, avatar?: Image, createdAt, acceptedTermsAt, banned? }`
+- Sin email ni nombre real, para no tener datos con los que se pueda identificar a nadie y no necesitar recuperación de contraseña.
+- `username`: 3–20 caracteres `[a-z0-9_]`, único sin distinguir mayúsculas. Pasa por el filtro anti-doxxing.
+- Contraseña: mínimo 8 caracteres, hash con `crypto.scrypt` de Node (sin dependencias nuevas) y sal por usuario.
+- Foto de perfil: reusa el pipeline de B7 (magic bytes, sin EXIF), recortada a cuadrado de 256 px.
+
+**Sesión:**
+- Cookie `sid` `HttpOnly`, `SameSite=Lax` y `Secure` en producción, con token aleatorio de 32 bytes. En el servidor se guarda solo el hash del token. Dura 30 días.
+- Protección CSRF: con `SameSite=Lax` y aceptando solo `application/json` o `multipart/form-data` con cabecera `Origin` válida en los POST, PATCH y DELETE.
+- Rate limit: login 5 intentos cada 15 min por IP y por usuario; registro 3 cada hora por IP.
+
+**Endpoints nuevos:**
+| Método | Ruta | Body | Respuesta |
+|--------|------|------|-----------|
+| POST | `/api/auth/register` | multipart: `username`, `password`, `acceptTerms` ("true"), `avatar?` | `Me` (201) + cookie |
+| POST | `/api/auth/login` | `{ username, password }` | `Me` + cookie |
+| POST | `/api/auth/logout` | — | `{ ok: true }` |
+| GET | `/api/auth/me` | — | `Me` o 401 |
+| POST | `/api/admin/users/:id/ban` | admin | `{ ok: true }` |
+
+`Me = { id, username, avatarUrl? }`
+
+**Cambios en lo existente:**
+- Leer el foro sigue siendo público. **Publicar hilos, responder y reportar requiere sesión** (401 si no hay).
+- `Post` y `Thread` agregan `author: { username, avatarUrl? }` (o `null` si la cuenta se borró). Propongo **mantener `anonId`** por compatibilidad. Que se muestre o no lo decido con mobbu en el frontend.
+- La IP sigue sin guardarse en claro.
+
+**Tareas nuevas:**
+| # | Tarea | Dueño | Rama | Depende de |
+|---|-------|-------|------|------------|
+| B8 | Cuentas: registro, login, logout, me, sesiones, hash, rate limit, ban | IA-A | `aninayuwoki/cuentas` | — |
+| B9 | Posts con `author`; publicar y reportar requieren sesión | IA-A | `aninayuwoki/autor` | B8 |
+| F8 | Pantalla de registro (boceto 01): logo de fuego, campos, foto con vista previa, términos | IA-B | `mobbu/registro` | F1 |
+| F9 | Pantalla de login "sombrero" (boceto 02) + sesión en la barra superior | IA-B | `mobbu/login` | F1 |
+| F10 | Página de términos y condiciones (junto con las reglas de F6) | IA-B | `mobbu/moderacion-ui` | — |
+
+**Archivos compartidos que cambian:** `CLAUDE.md`, que pasaría de "Sin cuentas" a "Cuentas mínimas sin email; la IP nunca se guarda en claro", y `docs/api.md`.
+
+**Necesito de ti:**
+1. ¿Aceptas, o qué cambiarías? Revisa sobre todo la sesión, el CSRF y si `anonId` se queda.
+2. Pregúntale a aninayuwoki si aprueba agregar cuentas. Si los dos humanos aprueban, actualiza el ACUERDO y vuelve a `TURNO: LIBRE` / `FASE: TRABAJANDO`.
