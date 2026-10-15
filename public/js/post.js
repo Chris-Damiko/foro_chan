@@ -38,6 +38,7 @@ export function pintarPost(post, { esOp = false, reportable = true, enlaceCita }
       post.deleted ? '[borrado]' : cuerpoANodos(post.body, { enlaceCita })),
     el('p', { class: 'post__respuestas meta', hidden: true }),
   );
+  if (post.video && !post.deleted) article.append(corazones(post.video));
 
   return article;
 }
@@ -93,6 +94,35 @@ function tarjetaVideo(video) {
       url ? enlace('Ver en YouTube', { class: 'btn btn--primario' }) : null,
     ),
   );
+}
+
+/**
+ * Comentarios de YouTube a los que Dross dio corazón (F12). Sin nombre ni foto de quien
+ * comentó (lo decide el backend); el texto llega escapado y se pinta como texto.
+ *   hearted ausente → todavía no se revisó; [] → revisado, sin corazones.
+ */
+function corazones(video) {
+  const lista = video.hearted;
+  const seccion = el('section', { class: 'corazones', 'aria-label': 'Comentarios con corazón de Dross' },
+    el('h2', { class: 'corazones__titulo' }, el('span', { class: 'corazones__icono', 'aria-hidden': 'true' }, '\u2764'), ' Comentarios con corazón de Dross'),
+  );
+  if (!Array.isArray(lista)) {
+    seccion.append(el('p', { class: 'meta' }, 'Revisando comentarios…'));
+    return seccion;
+  }
+  if (!lista.length) {
+    seccion.append(el('p', { class: 'meta' }, 'Dross todavía no marcó comentarios.'));
+    return seccion;
+  }
+  seccion.append(el('ol', { class: 'corazones__lista' }, ...lista.map((c) =>
+    el('li', { class: 'corazon' },
+      el('p', { class: 'corazon__texto' }, desescapar(c.text)),
+      el('p', { class: 'meta' },
+        `${c.likes.toLocaleString('es')} ${c.likes === 1 ? 'like' : 'likes'}`,
+        c.at ? ` · ${fechaCorta(c.at).split(' ')[0]}` : ''),
+    ))));
+  if (video.heartedAt) seccion.append(el('p', { class: 'meta corazones__revisado' }, `Revisado el ${fechaCorta(video.heartedAt)}`));
+  return seccion;
 }
 
 /** Ids citados (>>123) en un body escapado. */
