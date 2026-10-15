@@ -11,7 +11,7 @@ export async function startTestServer({ rateLimits = {} } = {}) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'foro-chan-'));
   const store = await createStore({ dir });
   const uploadsDir = path.join(dir, 'uploads');
-  const server = createApp({ store, salt: 'sal-de-prueba', adminToken: ADMIN_TOKEN, uploadsDir, rateLimits }).listen(0);
+  const server = createApp({ store, salt: 'sal-de-prueba', tripSecret: 'trip-de-prueba', adminToken: ADMIN_TOKEN, uploadsDir, rateLimits }).listen(0);
   await new Promise((resolve) => server.once('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
 
@@ -39,6 +39,7 @@ export async function startTestServer({ rateLimits = {} } = {}) {
     base,
     postForm,
     get: (url) => request('GET', url),
+    request,
     post: (url, body) => request('POST', url, body),
     patch: (url, body, headers) => request('PATCH', url, body, headers),
     del: (url, headers) => request('DELETE', url, undefined, headers),

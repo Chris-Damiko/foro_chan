@@ -12,6 +12,7 @@ function emptyDb() {
     threads: [],   // Thread: el OP vive aquí, con id === id del post inicial
     posts: [],     // respuestas (Post)
     reports: [],   // Report
+    bannedTripcodes: [], // tripcodes bloqueados por el admin ("!xxxxxxxxxx")
   };
 }
 

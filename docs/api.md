@@ -17,6 +17,7 @@ Estado de implementación: la columna **Tarea** dice qué tarea del ACUERDO impl
 |--------|--------|
 | 400 | Datos inválidos: campo faltante, demasiado largo, JSON mal formado, imagen inválida |
 | 401 | Falta `x-admin-token` o es incorrecto (o el servidor no tiene `ADMIN_TOKEN` configurado) |
+| 403 | El tripcode está bloqueado por un admin |
 | 404 | Tablero, hilo o post no existe |
 | 413 | Imagen mayor a 4 MB |
 | 429 | Rate limit excedido |
@@ -45,6 +46,8 @@ type Post = {
   id: number;            // incremental global, compartido con los hilos (>>1234)
   threadId: number;
   anonId: string;        // 8 caracteres, estable dentro de un hilo
+  name?: string;         // nombre opcional elegido por quien publica (escapado, ≤ 30)
+  tripcode?: string;     // "!" + 10 caracteres, solo si escribió "nombre#clave"
   body: string;          // texto plano, HTML ya escapado por el backend
   createdAt: string;
   image?: Image;
@@ -56,6 +59,8 @@ type Thread = {
   board: string;
   title: string;
   anonId: string;
+  name?: string;
+  tripcode?: string;
   body: string;
   createdAt: string;
   bumpedAt: string;      // última respuesta; ordena el catálogo
@@ -85,6 +90,12 @@ type Report = {
   - `>>1234`: cita a un post. Si el post tiene `deleted: true`, se pinta como borrado.
   - Línea que empieza con `>` (y no con `>>`): greentext. Ojo: llega escapada como `&gt;`.
 - Saltos de línea: `\n`.
+
+### name y tripcode (identidad sin cuentas)
+- Al crear un hilo o una respuesta, el campo opcional `name` acepta `"nombre"`, `"nombre#clave"` o `"#clave"`.
+- La respuesta trae `name` (la parte antes de `#`) y `tripcode` = `"!"` + `base64url(HMAC-SHA256(TRIP_SECRET, clave)).slice(0, 10)`. La misma clave siempre da el mismo tripcode; la clave nunca se guarda.
+- Sin `name` (o vacío), el post no trae `name` ni `tripcode`; el frontend muestra "Anónimo".
+- `name` pasa por el filtro anti-doxxing. Si el tripcode está bloqueado, la API responde `403` `"Esta firma está bloqueada"`.
 
 ### anonId
 `anonId` = hash(IP + id del hilo + sal secreta), 8 caracteres. Es el mismo para una persona dentro de un hilo y distinto entre hilos. La IP nunca se guarda en claro.
@@ -119,6 +130,10 @@ Al guardar una imagen, el backend borra EXIF/GPS y no guarda el nombre original.
 | PATCH | `/api/threads/:id/status` | B6 |
 | GET | `/api/admin/reports` | B5 |
 | DELETE | `/api/admin/posts/:id` | B5 |
+| POST / DELETE | `/api/admin/tripcodes/:trip/ban` | B8 |
+| PATCH | `/api/admin/threads/:id/status` (alias para la cookie) | B9 |
+| POST | `/api/admin/login` | B9 |
+| POST | `/api/admin/logout` | B9 |
 | GET | `/uploads/<archivo>` | B1 (archivos desde B7) |
 
 ### GET /api/health
@@ -146,7 +161,7 @@ Crea un hilo. Dos formatos:
 
 **JSON** (sin imagen):
 ```json
-{ "title": "Título", "body": "Texto", "sources": ["https://..."] }
+{ "title": "Título", "body": "Texto", "sources": ["https://..."], "name": "mobbu#clave" }
 ```
 
 **multipart/form-data** (con imagen):
@@ -155,6 +170,7 @@ Crea un hilo. Dos formatos:
 | `title` | texto |
 | `body` | texto |
 | `sources` | texto con JSON de un array, ej. `["https://a.com","https://b.com"]` |
+| `name` | texto, opcional (`"nombre#clave"`) |
 | `image` | archivo (opcional) |
 
 En el tablero `casos`, `sources` es obligatorio (mínimo 1) y el hilo nace con `status: "abierto"` y `statusHistory: [{ "status": "abierto", "at": createdAt }]`.
@@ -167,8 +183,8 @@ En el tablero `casos`, `sources` es obligatorio (mínimo 1) y el hilo nace con `
 `404` si no existe o si el OP fue borrado.
 
 ### POST /api/threads/:id/replies
-**JSON:** `{ "body": "Texto" }`
-**multipart:** campos `body` (texto) e `image` (archivo). Al menos uno de los dos.
+**JSON:** `{ "body": "Texto", "name": "mobbu#clave" }` (`name` opcional)
+**multipart:** campos `body` (texto), `name` (opcional) e `image` (archivo). Al menos `body` o `image`.
 
 `201` → `Post`. Hace bump del hilo.
 `400`, `404`, `413`, `429` según el caso.
@@ -200,3 +216,21 @@ Header `x-admin-token`.
 
 ### GET /uploads/&lt;archivo&gt;
 Archivos estáticos de `data/uploads/`. Usa `image.url` e `image.thumbUrl` tal como vienen; no armes la ruta a mano.
+
+### POST /api/admin/tripcodes/:trip/ban (admin)
+Bloquea un tripcode: publicar con esa firma da `403`. `:trip` con o sin `!` (si lleva `!`, va codificado como `%21`).
+`200` → `{ "ok": true }`. `400` (formato inválido), `401`.
+
+### DELETE /api/admin/tripcodes/:trip/ban (admin)
+Desbloquea. `200` → `{ "ok": true }`.
+
+### Autenticación del admin
+Las rutas de admin aceptan **una** de estas dos formas:
+- Cookie de sesión `dd_admin` (la crea `/api/admin/login`). Es la que usa el frontend: el navegador la manda sola en las rutas `/api/admin/*`, porque es `HttpOnly`, `SameSite=Strict` y `Path=/api/admin`. Como la cookie solo viaja a `/api/admin/*`, el cambio de estado de un caso también existe como **`PATCH /api/admin/threads/:id/status`** (igual que `PATCH /api/threads/:id/status`). El panel admin debe usar la ruta `/api/admin/...`.
+- Cabecera `x-admin-token: <ADMIN_TOKEN>` (tests y consola).
+
+### POST /api/admin/login
+`{ "password": "<ADMIN_TOKEN>" }` → `200 { "ok": true }` + cookie `dd_admin` (12 h). `401` si la contraseña no coincide. `429` si se repite antes de 3 s (frena la fuerza bruta).
+
+### POST /api/admin/logout
+Borra la sesión y la cookie. `200 { "ok": true }`.

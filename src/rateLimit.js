@@ -5,6 +5,7 @@ export const DEFAULT_LIMITS = {
   thread: 60_000,
   reply: 15_000,
   report: 10_000,
+  adminLogin: 3_000, // frena la fuerza bruta contra ADMIN_TOKEN
 };
 
 const MAX_ENTRIES = 10_000;

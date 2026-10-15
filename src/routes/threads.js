@@ -3,8 +3,8 @@ import { BOARDS, BOARD_IDS } from '../boards.js';
 import { anonId } from '../anon.js';
 import { cleanText, httpError } from '../text.js';
 import { CASES_BOARD, cleanSources, parseStatus } from '../cases.js';
-import { requireAdmin } from '../admin.js';
 import { rejectPersonalData } from '../doxxing.js';
+import { parseName } from '../tripcode.js';
 import { processImage, saveImage, uploadImage } from '../images.js';
 
 const PAGE_SIZE = 20;
@@ -42,7 +42,7 @@ function summarize(thread) {
   return { ...thread, body };
 }
 
-export function threadsRouter({ store, salt, limiter, adminToken, uploadsDir }) {
+export function threadsRouter({ store, salt, tripSecret, limiter, requireAdmin, uploadsDir }) {
   const upload = uploadImage();
   const router = express.Router();
   const findThread = (id) => {
@@ -50,6 +50,15 @@ export function threadsRouter({ store, salt, limiter, adminToken, uploadsDir }) 
     if (!thread) throw httpError(404, 'No encontrado');
     return thread;
   };
+
+  /** name/tripcode opcionales; 403 si el tripcode está bloqueado. */
+  function readIdentity(input) {
+    const ident = parseName(input.name, tripSecret);
+    if (ident.tripcode && store.data.bannedTripcodes?.includes(ident.tripcode)) {
+      throw httpError(403, 'Esta firma está bloqueada');
+    }
+    return ident;
+  }
 
   router.get('/boards', (req, res) => {
     const counts = {};
@@ -86,7 +95,8 @@ export function threadsRouter({ store, salt, limiter, adminToken, uploadsDir }) 
     const input = req.body ?? {};
     const title = cleanText(input.title, { field: 'title', max: LIMITS.title });
     const body = cleanText(input.body, { field: 'body', max: LIMITS.body });
-    rejectPersonalData(title, body);
+    const ident = readIdentity(input);
+    rejectPersonalData(title, body, ident.name);
     const isCase = board === CASES_BOARD;
     const sources = cleanSources(parseSourcesField(input.sources), { required: isCase });
     const image = req.file ? await processImage(req.file.buffer) : null;
@@ -99,6 +109,7 @@ export function threadsRouter({ store, salt, limiter, adminToken, uploadsDir }) 
         board,
         title,
         anonId: anonId(req.ip, id, salt),
+        ...ident,
         body,
         createdAt: now,
         bumpedAt: now,
@@ -115,7 +126,8 @@ export function threadsRouter({ store, salt, limiter, adminToken, uploadsDir }) 
     });
   }
 
-  router.patch('/threads/:id/status', requireAdmin(adminToken), async (req, res) => {
+  // También bajo /admin para que llegue la cookie de sesión (Path=/api/admin).
+  router.patch(['/threads/:id/status', '/admin/threads/:id/status'], requireAdmin, async (req, res) => {
     const threadId = parseId(req.params.id);
     const status = parseStatus(req.body?.status);
     const thread = await store.update((db) => {
@@ -153,7 +165,8 @@ export function threadsRouter({ store, salt, limiter, adminToken, uploadsDir }) 
     const image = req.file ? await processImage(req.file.buffer) : null;
     // Una respuesta necesita texto o imagen; con imagen, el texto es opcional.
     const body = cleanText(input.body, { field: 'body', max: LIMITS.body, min: image ? 0 : 1 });
-    rejectPersonalData(body);
+    const ident = readIdentity(input);
+    rejectPersonalData(body, ident.name);
 
     return store.update(async (db) => {
       // Buscar de nuevo dentro de la cola: el hilo pudo borrarse mientras esperábamos.
@@ -164,6 +177,7 @@ export function threadsRouter({ store, salt, limiter, adminToken, uploadsDir }) 
         id: store.nextId(),
         threadId,
         anonId: anonId(req.ip, threadId, salt),
+        ...ident,
         body,
         createdAt: now,
       };

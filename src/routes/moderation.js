@@ -1,6 +1,6 @@
 import express from 'express';
-import { requireAdmin } from '../admin.js';
 import { cleanText, httpError } from '../text.js';
+import { normalizeTripcode } from '../tripcode.js';
 
 const MAX_REASON = 500;
 
@@ -23,9 +23,9 @@ function findPost(db, id) {
  * Reportes (públicos) y borrado (admin).
  * `onDeleteImages(images)` lo usa B7 para borrar los archivos del disco.
  */
-export function moderationRouter({ store, limiter, adminToken, onDeleteImages = async () => {} }) {
+export function moderationRouter({ store, limiter, requireAdmin, onDeleteImages = async () => {} }) {
   const router = express.Router();
-  const admin = requireAdmin(adminToken);
+  const admin = requireAdmin;
 
   router.post('/posts/:id/report', async (req, res) => {
     const postId = parseId(req.params.id);
@@ -80,6 +80,23 @@ export function moderationRouter({ store, limiter, adminToken, onDeleteImages = 
       return removed;
     });
     await onDeleteImages(images);
+    res.json({ ok: true });
+  });
+
+  router.post('/admin/tripcodes/:trip/ban', admin, async (req, res) => {
+    const trip = normalizeTripcode(req.params.trip);
+    await store.update((db) => {
+      db.bannedTripcodes ??= [];
+      if (!db.bannedTripcodes.includes(trip)) db.bannedTripcodes.push(trip);
+    });
+    res.json({ ok: true });
+  });
+
+  router.delete('/admin/tripcodes/:trip/ban', admin, async (req, res) => {
+    const trip = normalizeTripcode(req.params.trip);
+    await store.update((db) => {
+      db.bannedTripcodes = (db.bannedTripcodes ?? []).filter((t) => t !== trip);
+    });
     res.json({ ok: true });
   });
 
