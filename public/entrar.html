@@ -28,24 +28,39 @@
         <button class="cara__modo" type="button" role="tab" id="tab-admin" aria-controls="form-entrar" aria-selected="false" data-modo="admin">admin</button>
       </div>
 
-      <img class="cara__sombrero" src="/img/sombrero.svg" alt="" width="400" height="180">
-
       <form class="cara__form" id="form-entrar" role="tabpanel" novalidate>
-        <!-- Las gafas (cuadradas) del ícono de incógnito: cada lente es un campo, unidos por el puente. -->
-        <div class="gafas">
-          <div class="campo gafas__lente">
-            <label for="e-usuario" class="sr-only">Usuario</label>
-            <input id="e-usuario" type="text" maxlength="30" autocomplete="off" spellcheck="false" placeholder="USER" aria-describedby="ayuda-entrar">
-          </div>
-          <span class="gafas__puente" aria-hidden="true"></span>
-          <div class="campo gafas__lente">
-            <label for="e-clave" class="sr-only">Contraseña</label>
-            <input id="e-clave" type="password" maxlength="100" autocomplete="off" placeholder="PASSWORD">
-          </div>
-        </div>
+        <!-- El ícono de incógnito (boceto 02 de mobbu), con proporciones fijas:
+             sombrero arriba, gafas cuadradas = campos USER y PASSWORD, gabardina = botón ENTRAR. -->
+        <div class="incognito">
+          <img class="incognito__sombrero" src="/img/sombrero.svg" alt="" width="400" height="180">
 
-        <button class="cara__boca" type="submit">ENTRAR</button>
-        <div class="cara__patas" aria-hidden="true"></div>
+          <div class="gafas">
+            <div class="campo gafas__lente">
+              <label for="e-usuario" class="sr-only">Usuario</label>
+              <input id="e-usuario" type="text" maxlength="30" autocomplete="off" spellcheck="false" placeholder="USER" aria-describedby="ayuda-entrar">
+            </div>
+            <span class="gafas__puente" aria-hidden="true"></span>
+            <div class="campo gafas__lente">
+              <label for="e-clave" class="sr-only">Contraseña</label>
+              <input id="e-clave" type="password" maxlength="100" autocomplete="off" placeholder="PASSWORD">
+            </div>
+          </div>
+
+          <button class="gabardina" type="submit">
+            <svg class="gabardina__dibujo" viewBox="0 0 336 185" aria-hidden="true" preserveAspectRatio="none">
+              <!-- cuerpo con hombros caídos -->
+              <path class="gabardina__tela" d="M118 4 L218 4 L322 58 L330 185 L6 185 L14 58 Z"/>
+              <!-- cuello levantado y solapas en V -->
+              <path class="gabardina__solapa" d="M118 4 L92 34 L168 104 L244 34 L218 4"/>
+              <path class="gabardina__solapa" d="M118 4 L168 60 L218 4"/>
+              <!-- abertura -->
+              <path class="gabardina__linea" d="M168 104 L168 185"/>
+              <!-- cinturón -->
+              <path class="gabardina__linea" d="M12 150 L324 150 M12 168 L324 168"/>
+            </svg>
+            <span class="gabardina__texto">ENTRAR</span>
+          </button>
+        </div>
 
         <label class="cara__recordar" id="recordar-fila">
           <input type="checkbox" id="e-recordar">
