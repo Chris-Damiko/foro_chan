@@ -149,15 +149,13 @@ const MAX_HEARTED_TEXT = 2000;
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const RECENT_VIDEOS = 5;
 
-/** Hilos de video cuyos corazones hay que (re)leer: nunca leídos, los 5 más nuevos, o leídos hace más de una semana. */
+/** Hilos de video cuyos corazones hay que (re)leer, del más nuevo al más viejo: nunca leídos, los 5 más nuevos, o leídos hace más de una semana. */
 export function videosToRefresh(threads, now = Date.now()) {
-  const videos = threads.filter((t) => t.video);
-  const recent = new Set(
-    [...videos]
-      .sort((a, b) => (b.video.publishedAt ?? b.createdAt).localeCompare(a.video.publishedAt ?? a.createdAt))
-      .slice(0, RECENT_VIDEOS)
-      .map((t) => t.id),
-  );
+  // Del más nuevo al más viejo: son los que más se visitan, así se ven antes.
+  const videos = threads
+    .filter((t) => t.video)
+    .sort((a, b) => (b.video.publishedAt ?? b.createdAt).localeCompare(a.video.publishedAt ?? a.createdAt));
+  const recent = new Set(videos.slice(0, RECENT_VIDEOS).map((t) => t.id));
   return videos.filter(
     (t) => !t.video.heartedAt || recent.has(t.id) || now - Date.parse(t.video.heartedAt) > WEEK_MS,
   );
