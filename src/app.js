@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { threadsRouter } from './routes/threads.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -11,7 +12,12 @@ export const PATHS = {
 };
 PATHS.uploads = path.join(PATHS.data, 'uploads');
 
-export function createApp() {
+/**
+ * @param {object} [deps]
+ * @param {object} [deps.store] almacenamiento de src/storage.js; sin él solo existe /api/health.
+ * @param {string} [deps.salt] sal secreta para los anonId.
+ */
+export function createApp({ store, salt } = {}) {
   const app = express();
 
   app.disable('x-powered-by');
@@ -24,7 +30,7 @@ export function createApp() {
   api.get('/health', (req, res) => {
     res.json({ ok: true });
   });
-  // Rutas de B3+ se montan aquí.
+  if (store) api.use(threadsRouter({ store, salt }));
   api.use((req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });
   });
