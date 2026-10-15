@@ -353,6 +353,46 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .sin-senal__titulo { font-family: var(--f-display); font-size: 3rem; line-height: 1; letter-spacing: 0.1em; }
 .sin-senal p { color: var(--c-meta); }
 
+/* ---------- Portada ---------- */
+.portada { padding-block: clamp(2.5rem, 8vw, 5rem) var(--e-8); }
+.portada__lema { margin-top: var(--e-3); max-width: var(--ancho-texto); color: var(--c-meta); }
+.portada__reglas { margin-top: var(--e-8); }
+
+.lista-tableros { display: grid; gap: var(--e-2); }
+.tablero-item {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  grid-template-areas: "id nombre cuenta" "id desc cuenta";
+  align-items: baseline;
+  gap: 0 var(--e-4);
+  padding: var(--e-3) var(--e-4);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio);
+  color: var(--c-texto);
+  transition: border-color var(--dur-rapida) var(--curva);
+}
+.tablero-item:hover { border-color: var(--c-acento); text-decoration: none; }
+.tablero-item__id { grid-area: id; font-family: var(--f-display); font-size: 2rem; line-height: 1; color: var(--c-acento-claro); }
+.tablero-item__nombre { grid-area: nombre; font-weight: 600; }
+.tablero-item__desc { grid-area: desc; font-size: var(--t-sm); color: var(--c-meta); }
+.tablero-item__cuenta { grid-area: cuenta; }
+@media (max-width: 767px) {
+  .tablero-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "id cuenta" "nombre nombre" "desc desc";
+  }
+}
+
+/* ---------- Tablero ---------- */
+.nuevo-hilo { margin-block: var(--e-6); }
+.nuevo-hilo > summary { list-style: none; width: fit-content; }
+.nuevo-hilo > summary::-webkit-details-marker { display: none; }
+.nuevo-hilo[open] > summary { margin-bottom: var(--e-4); }
+.nuevo-hilo:not([open]) > summary::after { content: ' +'; }
+.nuevo-hilo[open] > summary::after { content: ' −'; }
+.paginacion { margin-top: var(--e-6); }
+
 /* ---------- Avisos ---------- */
 .aviso {
   padding: var(--e-3) var(--e-4);

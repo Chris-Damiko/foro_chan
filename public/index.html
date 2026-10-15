@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Imageboard anónimo de confesiones y casos.">
+  <title>DearDross</title>
+  <link rel="preload" href="/fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/efectos.css">
+  <script type="module" src="/js/portada.js"></script>
+</head>
+<body>
+  <div class="vineta" aria-hidden="true"></div>
+
+  <header class="contenedor barra">
+    <a class="barra__logo glitch" href="/">DearDross</a>
+  </header>
+
+  <main class="contenedor entrada">
+    <section class="portada">
+      <h1 class="logo glitch">DearDross</h1>
+      <p class="portada__lema">Lo que nunca dijiste. Sin nombres, sin cuentas, sin rastro.</p>
+    </section>
+
+    <section aria-labelledby="titulo-tableros">
+      <h2 id="titulo-tableros" class="panel__titulo">Tableros</h2>
+      <ul class="lista-tableros" role="list" id="tableros">
+        <li><div class="esqueleto" style="height: 4.5rem"></div></li>
+        <li><div class="esqueleto" style="height: 4.5rem"></div></li>
+        <li><div class="esqueleto" style="height: 4.5rem"></div></li>
+      </ul>
+    </section>
+
+    <p class="aviso portada__reglas">
+      Prohibido publicar datos personales de cualquier persona. En Casos, toda afirmación lleva una fuente.
+    </p>
+  </main>
+
+  <footer class="contenedor pie">DearDross · anónimo · sin cuentas · sin registros de IP</footer>
+</body>
+</html>
