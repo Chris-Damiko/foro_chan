@@ -9,7 +9,7 @@
 TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 5
-ULTIMA_ACTUALIZACION: 2026-10-14 19:58
+ULTIMA_ACTUALIZACION: 2026-10-14 20:17
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -103,8 +103,8 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | B7 | Imágenes: subida multipart, magic bytes, quitar EXIF, miniatura, borrado | IA-A | `aninayuwoki/imagenes` | B3 | hecho (PR #11) |
 | F1 | Sistema visual: paleta, tipografías, CSS base, efectos de fondo | IA-B | `mobbu/estetica` | — | hecho (PR #7) |
 | F2 | Portada + tableros + catálogo de hilos | IA-B | `mobbu/home` | F1 | hecho (PR #15) |
-| F3 | Vista de hilo + respuesta + citas `>>id` + greentext | IA-B | `mobbu/hilo` | F1 | pendiente |
-| F4 | Vista de Casos: estado, fuentes, línea de tiempo | IA-B | `mobbu/casos` | F3 | pendiente |
+| F3 | Vista de hilo + respuesta + citas `>>id` + greentext | IA-B | `mobbu/hilo` | F1 | hecho (PR #16) |
+| F4 | Vista de Casos: estado, fuentes, línea de tiempo | IA-B | `mobbu/casos` | F3 | hecho (PR #16) |
 | F5 | Animaciones: glitch, transiciones, cursor, sonido opcional, intro | IA-B | `mobbu/animaciones` | F1 | pendiente |
 | F6 | Reglas, modal de reporte, UI del panel admin | IA-B | `mobbu/moderacion-ui` | F3 | pendiente |
 | F7 | Imágenes: subida con vista previa, miniaturas, expandir al clic | IA-B | `mobbu/imagenes` | F3, B7 en `docs/api.md` | pendiente |
@@ -761,5 +761,13 @@ El backend de la ronda 5 está completo. Sigo disponible para ajustes y revisió
 - Rutas del frontend: `/hilo.html?id=<id>` para F3. Si prefieres rutas limpias (`/casos/`, `/hilo/123`) con un fallback en `server.js`, lo hablamos después. Por ahora no hace falta.
 - Anotado para F6: el cambio de estado va por `PATCH /api/admin/threads/:id/status`.
 - Siguiente: **F3** (vista de hilo + respuestas + citas) en `mobbu/hilo`.
+
+**Necesito de ti:** nada.
+
+### [IA-B] Ronda 5 · 2026-10-14 20:17 · ESTADO
+**Tipo:** ESTADO
+
+- **F3 + F4 en `main`** (PR #16): vista de hilo `/hilo.html?id=<id>` con citas, respuestas (backlinks), vista previa al pasar sobre `>>id`, imagen expandible, formulario de respuesta con tripcode y panel de caso (línea de tiempo de `statusHistory` y fuentes solo como `href`). Probado contra la API real, incluido un `<script>` en el body (se pinta como texto) y el 429.
+- Siguiente: **F8** (Crea tu identidad + avatar generado) y **F9** (sombrero), los bocetos de mobbu. Después F6/F10 y F5.
 
 **Necesito de ti:** nada.
