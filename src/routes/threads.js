@@ -2,6 +2,8 @@ import express from 'express';
 import { BOARDS, BOARD_IDS } from '../boards.js';
 import { anonId } from '../anon.js';
 import { cleanText, httpError } from '../text.js';
+import { CASES_BOARD, cleanSources, parseStatus } from '../cases.js';
+import { requireAdmin } from '../admin.js';
 
 const PAGE_SIZE = 20;
 const SUMMARY_LENGTH = 300;
@@ -27,7 +29,7 @@ function summarize(thread) {
   return { ...thread, body };
 }
 
-export function threadsRouter({ store, salt, limiter }) {
+export function threadsRouter({ store, salt, limiter, adminToken }) {
   const router = express.Router();
   const findThread = (id) => {
     const thread = store.data.threads.find((t) => t.id === id);
@@ -70,6 +72,8 @@ export function threadsRouter({ store, salt, limiter }) {
     const input = req.body ?? {};
     const title = cleanText(input.title, { field: 'title', max: LIMITS.title });
     const body = cleanText(input.body, { field: 'body', max: LIMITS.body });
+    const isCase = board === CASES_BOARD;
+    const sources = cleanSources(input.sources, { required: isCase });
 
     return store.update((db) => {
       const id = store.nextId();
@@ -84,10 +88,30 @@ export function threadsRouter({ store, salt, limiter }) {
         bumpedAt: now,
         replyCount: 0,
       };
+      if (sources.length) t.sources = sources;
+      if (isCase) {
+        t.status = 'abierto';
+        t.statusHistory = [{ status: 'abierto', at: now }];
+      }
       db.threads.push(t);
       return t;
     });
   }
+
+  router.patch('/threads/:id/status', requireAdmin(adminToken), async (req, res) => {
+    const threadId = parseId(req.params.id);
+    const status = parseStatus(req.body?.status);
+    const thread = await store.update((db) => {
+      const t = db.threads.find((x) => x.id === threadId);
+      if (!t) throw httpError(404, 'No encontrado');
+      if (t.board !== CASES_BOARD) throw httpError(400, 'Solo los hilos de Casos tienen estado');
+      if (t.status === status) throw httpError(400, `El caso ya está en ${status}`);
+      t.status = status;
+      t.statusHistory.push({ status, at: new Date().toISOString() });
+      return t;
+    });
+    res.json(thread);
+  });
 
   router.get('/threads/:id', (req, res) => {
     const thread = findThread(parseId(req.params.id));

@@ -16,7 +16,7 @@ Estado de implementación: la columna **Tarea** dice qué tarea del ACUERDO impl
 | Status | Cuándo |
 |--------|--------|
 | 400 | Datos inválidos: campo faltante, demasiado largo, JSON mal formado, imagen inválida |
-| 401 | Falta `x-admin-token` o es incorrecto |
+| 401 | Falta `x-admin-token` o es incorrecto (o el servidor no tiene `ADMIN_TOKEN` configurado) |
 | 404 | Tablero, hilo o post no existe |
 | 413 | Imagen mayor a 4 MB |
 | 429 | Rate limit excedido |
@@ -62,7 +62,8 @@ type Thread = {
   replyCount: number;
   image?: Image;
   status?: "abierto" | "en_revision" | "cerrado";  // solo tablero "casos"
-  sources?: string[];    // URLs http(s); mínimo 1 en "casos"
+  sources?: string[];    // URLs http(s) normalizadas (URL.href), sin duplicados; mínimo 1 en "casos".
+                         // NO vienen escapadas como HTML: ponerlas con setAttribute('href', url) o equivalente.
   statusHistory?: { status: "abierto" | "en_revision" | "cerrado"; at: string }[];
                          // solo "casos", orden cronológico; el primero es "abierto" con at = createdAt
 };
@@ -179,7 +180,7 @@ Header `x-admin-token: <token>`. Body `{ "status": "en_revision" }`.
 Solo hilos del tablero `casos`. Cambia `status` y agrega `{ status, at }` al final de `statusHistory`.
 
 `200` → `Thread`
-`400` (status inválido o el hilo no es de `casos`), `401`, `404`.
+`400` (status inválido, el hilo no es de `casos` o ya estaba en ese estado), `401`, `404`.
 
 ### GET /api/admin/reports (admin)
 Header `x-admin-token`. `200` → `Report[]`, el más nuevo primero. `401` sin token válido.
