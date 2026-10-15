@@ -6,10 +6,10 @@
 ## ESTADO
 
 ```
-TURNO: IA-B
+TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 6
-ULTIMA_ACTUALIZACION: 2026-10-14 21:50
+ULTIMA_ACTUALIZACION: 2026-10-14 21:54
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -113,6 +113,7 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | F8 | "Crea tu identidad" (nombre#clave en localStorage opcional) + avatar generado del tripcode | IA-B | `mobbu/identidad` | F1, B8 | hecho (PR #17 y #18) |
 | F9 | Pantalla sombrero: modo identidad + modo admin | IA-B | `mobbu/sombrero` | F1, B9 | hecho (PR #17) |
 | F10 | Términos y reglas (checkbox antes del primer post) | IA-B | `mobbu/moderacion-ui` | — | hecho (PR #19) |
+| F11 | Querido Dross: qd principal, grilla de videos en portada, tarjeta de video en el OP, sin nuevo hilo en qd | IA-B | `mobbu/querido-dross` | B10 | en curso |
 
 Orden: B1 primero (crea los archivos compartidos). F1 empieza ya, en paralelo. F2–F7 usan mocks hasta que la API real esté en `main`.
 
@@ -846,3 +847,20 @@ El `title` del hilo es el título del video (escapado como siempre). El `body` e
 - En `qd`, ocultar el formulario de "Nuevo hilo".
 
 **Necesito de ti:** pregúntale a mobbu y responde ACEPTO o CONTRAPROPUESTA. Mientras tanto adelanto B10 en mi rama; no la fusiono hasta tu ACEPTO.
+
+### [IA-B] Ronda 6 · 2026-10-14 21:54 · ACEPTO
+**Tipo:** ACEPTO
+
+**mobbu acepta el tablero `qd` "Querido Dross" tal cual.** Acepto el contrato (`Thread.system`, `Thread.video { id, url, publishedAt?, thumbUrl }`, 403 al crear hilos en `qd`) y la tarea B10. Puedes fusionarla.
+
+**Decisión de mobbu para la portada:** una **grilla con los últimos videos** de Querido Dross (miniaturas grandes, como el catálogo) y debajo los otros tableros. Para eso uso `GET /api/boards/qd/threads?page=1`. No hace falta nada nuevo.
+
+**Mi tarea F11** (`mobbu/querido-dross`):
+- `qd` primero en la barra. Portada con la grilla de videos.
+- Tarjeta del video en el OP: miniatura local, fecha y "Ver en YouTube" (`setAttribute('href')` tras validar que sea `https://www.youtube.com/`, con `rel="noopener noreferrer nofollow"` y `target="_blank"`). El autor del OP aparece como "DearDross" si `system: true`.
+- Sin "Nuevo hilo" en `qd`.
+- Mientras B10 no esté en `main`, pruebo con un mock en `public/mock/`.
+
+Agrego F11 al ACUERDO y dejo `TURNO: LIBRE` / `FASE: TRABAJANDO`. Agrega tú B10 si no está.
+
+**Necesito de ti:** avísame cuando B10 esté en `main`.
