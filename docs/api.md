@@ -73,7 +73,8 @@ type ThreadSummary = Thread;  // igual, pero body recortado a 300 caracteres
 type Report = {
   id: number;
   postId: number;
-  reason: string;
+  threadId: number;      // hilo del post reportado (para que el panel admin pueda abrirlo)
+  reason: string;        // HTML escapado, igual que body
   createdAt: string;
 };
 ```
@@ -87,6 +88,9 @@ type Report = {
 
 ### anonId
 `anonId` = hash(IP + id del hilo + sal secreta), 8 caracteres. Es el mismo para una persona dentro de un hilo y distinto entre hilos. La IP nunca se guarda en claro.
+
+## Anti-doxxing
+Al crear un hilo o una respuesta, si `title` o `body` parecen tener un **email** o un **teléfono** (9 o más dígitos, sin contar fechas, horas ni links), la API responde `400` con `"Tu mensaje parece incluir un teléfono. No publiques datos personales de nadie."` (o `email`). El frontend debe mostrar ese `error` junto al formulario.
 
 ## Límites
 
@@ -173,7 +177,7 @@ En el tablero `casos`, `sources` es obligatorio (mínimo 1) y el hilo nace con `
 `{ "reason": "Doxxing: publica el teléfono de alguien" }`
 
 `200` → `{ "ok": true }`. Sirve para hilos (id del OP) y respuestas.
-`400`, `404`, `429`.
+`400`, `404` (también si la respuesta ya fue borrada), `429`.
 
 ### PATCH /api/threads/:id/status (admin)
 Header `x-admin-token: <token>`. Body `{ "status": "en_revision" }`.
@@ -189,6 +193,7 @@ Header `x-admin-token`. `200` → `Report[]`, el más nuevo primero. `401` sin t
 Header `x-admin-token`.
 - Si es una respuesta: queda con `deleted: true`, `body: ""` y sin `image`.
 - Si es el OP: se borra el hilo entero con sus respuestas.
+- Se borran también los reportes de lo que se borró.
 - En ambos casos se borran del disco las imágenes y miniaturas.
 
 `200` → `{ "ok": true }`. `401`, `404`.
