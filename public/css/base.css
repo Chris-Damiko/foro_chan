@@ -719,3 +719,13 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 }
 .pie__sonido:hover,
 .pie__sonido[aria-pressed="true"] { color: var(--c-texto); }
+
+/* ---------- Comentarios con corazón de Dross (F12) ---------- */
+.corazones { clear: both; margin-top: var(--e-4); padding: var(--e-4); background: var(--c-superficie); border: 1px solid var(--c-borde); border-left: 3px solid var(--c-acento); border-radius: var(--radio); max-width: var(--ancho-texto); }
+.corazones__titulo { font-family: var(--f-mono); font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-meta); margin-bottom: var(--e-3); }
+.corazones__icono { color: var(--c-acento-claro); }
+.corazones__lista { list-style: none; padding: 0; display: grid; gap: var(--e-3); }
+.corazon { padding-bottom: var(--e-3); border-bottom: 1px solid var(--c-borde); }
+.corazon:last-child { border-bottom: 0; padding-bottom: 0; }
+.corazon__texto { white-space: pre-wrap; }
+.corazones__revisado { margin-top: var(--e-3); }
