@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Guía de estilo · foro_chan</title>
+  <link rel="preload" href="/fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/efectos.css">
+  <style>
+    /* Solo para esta página de muestra */
+    .muestra { padding-block: var(--e-8); border-bottom: 1px solid var(--c-borde); }
+    .muestra > h2 { font-family: var(--f-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-meta); margin-bottom: var(--e-4); }
+    .paleta { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--e-3); }
+    .paleta div { border: 1px solid var(--c-borde); }
+    .paleta span { display: block; height: 56px; }
+    .paleta p { padding: var(--e-2); font-family: var(--f-mono); font-size: var(--t-xs); color: var(--c-meta); }
+    .fila { display: flex; flex-wrap: wrap; gap: var(--e-3); align-items: center; }
+  </style>
+</head>
+<body>
+  <div class="vineta" aria-hidden="true"></div>
+
+  <header class="contenedor barra">
+    <a class="barra__logo glitch" href="/">foro_chan</a>
+    <nav class="barra__tableros" aria-label="Tableros">
+      <a href="#">conf</a>
+      <a href="#" aria-current="page">casos</a>
+      <a href="#">gen</a>
+    </nav>
+  </header>
+
+  <main class="contenedor entrada">
+    <section class="muestra">
+      <h2>Logo y títulos</h2>
+      <p class="logo glitch">foro_chan</p>
+      <h1 class="titulo-tablero" style="margin-top: var(--e-4)">/casos/ · Casos</h1>
+      <p class="titulo-hilo" style="margin-top: var(--e-3)">La cinta que nadie devolvió al videoclub</p>
+      <p class="meta" style="margin-top: var(--e-2)">ID:a8f3k2q1 · 14/10/26 03:12 · No.1234</p>
+    </section>
+
+    <section class="muestra">
+      <h2>Paleta</h2>
+      <div class="paleta">
+        <div><span style="background:var(--c-fondo)"></span><p>Dead Signal #0C0C0D</p></div>
+        <div><span style="background:var(--c-superficie)"></span><p>Tape Shell #151516</p></div>
+        <div><span style="background:var(--c-borde)"></span><p>Worn Edge #2A2A2C</p></div>
+        <div><span style="background:var(--c-texto)"></span><p>Ash Bone #D6D2C8</p></div>
+        <div><span style="background:var(--c-meta)"></span><p>Static Gray #7D7A73</p></div>
+        <div><span style="background:var(--c-acento)"></span><p>Dried Blood #9B2A22</p></div>
+        <div><span style="background:var(--c-greentext)"></span><p>Greentext Moss #7E9A5C</p></div>
+      </div>
+    </section>
+
+    <section class="muestra">
+      <h2>Hilo con respuestas</h2>
+      <article class="post post--op" id="p1230">
+        <figure class="post__imagen">
+          <span class="meta">cinta.jpg · 312 KB · 800×600</span>
+          <img src="/img/estatica.svg" width="250" height="188" alt="Imagen adjunta al hilo">
+        </figure>
+        <header class="post__cabecera">
+          <h3 class="titulo-hilo glitch">La cinta que nadie devolvió al videoclub</h3>
+          <span class="post__anon">Anónimo</span>
+          <span>ID:a8f3k2q1</span>
+          <time datetime="2026-10-14T03:12">14/10/26 03:12</time>
+          <a class="post__num" href="#p1230">No.1230</a>
+        </header>
+        <div class="post__cuerpo">Encontré una cinta sin etiqueta en una caja del ático.
+<span class="greentext">&gt;la pongo en la videocasetera</span>
+<span class="greentext">&gt;20 minutos de estática y luego un pasillo</span>
+<span class="greentext">&gt;el pasillo es el de mi casa</span>
+Alguien más ha tenido algo así?</div>
+      </article>
+
+      <div class="pila" style="margin-top: var(--e-4)">
+        <article class="post" id="p1231">
+          <header class="post__cabecera">
+            <span class="post__anon">Anónimo</span>
+            <span>ID:q9w2e7r4</span>
+            <time datetime="2026-10-14T03:20">14/10/26 03:20</time>
+            <a class="post__num" href="#p1231">No.1231</a>
+          </header>
+          <div class="post__cuerpo"><a class="cita" href="#p1230">&gt;&gt;1230</a>
+Sube una captura del pasillo o no pasó.</div>
+        </article>
+
+        <article class="post post--borrado" id="p1232">
+          <header class="post__cabecera">
+            <span class="post__anon">Anónimo</span>
+            <span>ID:z1x8c3v6</span>
+            <time datetime="2026-10-14T03:25">14/10/26 03:25</time>
+            <a class="post__num" href="#p1232">No.1232</a>
+          </header>
+          <div class="post__cuerpo">[borrado]</div>
+        </article>
+
+        <article class="post post--resaltado" id="p1233">
+          <header class="post__cabecera">
+            <span class="post__anon">Anónimo</span>
+            <span>ID:a8f3k2q1</span>
+            <time datetime="2026-10-14T03:31">14/10/26 03:31</time>
+            <a class="post__num" href="#p1233">No.1233</a>
+          </header>
+          <div class="post__cuerpo"><a class="cita" href="#p1231">&gt;&gt;1231</a> <a class="cita cita--rota" href="#p1232">&gt;&gt;1232</a>
+La videocasetera ya no expulsa la cinta.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="muestra con-lateral">
+      <div>
+        <h2>Caso: estado y fuentes</h2>
+        <p class="titulo-hilo">Recopilación de la transmisión perdida</p>
+        <p style="margin-top: var(--e-2)">
+          <span class="estado estado--abierto">Abierto</span>
+          <span class="estado estado--en_revision">En revisión</span>
+          <span class="estado estado--cerrado">Cerrado</span>
+        </p>
+      </div>
+      <aside class="pila">
+        <div class="panel">
+          <p class="panel__titulo">Estado</p>
+          <ol class="linea-tiempo">
+            <li><span class="estado estado--abierto">Abierto</span><br><span class="meta">12/10/26 22:04</span></li>
+            <li><span class="estado estado--en_revision">En revisión</span><br><span class="meta">14/10/26 01:47</span></li>
+          </ol>
+        </div>
+        <div class="panel">
+          <p class="panel__titulo">Fuentes</p>
+          <ol class="fuentes">
+            <li><a href="https://example.com/archivo/transmision" rel="noopener noreferrer nofollow">example.com/archivo/transmision</a></li>
+            <li><a href="https://example.org/foro/hilo-original" rel="noopener noreferrer nofollow">example.org/foro/hilo-original</a></li>
+          </ol>
+        </div>
+      </aside>
+    </section>
+
+    <section class="muestra">
+      <h2>Formulario de respuesta</h2>
+      <form class="formulario" onsubmit="return false">
+        <div class="campo">
+          <label for="f-titulo">Título</label>
+          <input id="f-titulo" type="text" maxlength="100" placeholder="Opcional en respuestas">
+        </div>
+        <div class="campo campo--error">
+          <label for="f-cuerpo">Mensaje</label>
+          <textarea id="f-cuerpo" maxlength="4000" aria-describedby="f-cuerpo-error"></textarea>
+          <span class="campo__contador">0 / 4000</span>
+          <span class="campo__error" id="f-cuerpo-error">Escribe un mensaje o adjunta una imagen.</span>
+        </div>
+        <div class="campo">
+          <label for="f-imagen">Imagen</label>
+          <input id="f-imagen" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
+          <span class="campo__ayuda">JPG, PNG, GIF o WEBP. Máximo 4 MB. Se borran los metadatos (EXIF).</span>
+        </div>
+        <p class="aviso">No publiques datos personales de nadie. Los posts con datos personales se borran.</p>
+        <div class="formulario__acciones">
+          <button class="btn btn--primario" type="submit">Publicar</button>
+          <button class="btn btn--texto" type="button">Cancelar</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="muestra">
+      <h2>Botones</h2>
+      <div class="fila">
+        <button class="btn btn--primario" type="button">Nuevo hilo</button>
+        <button class="btn" type="button">Reportar</button>
+        <button class="btn btn--texto" type="button">Cancelar</button>
+        <button class="btn" type="button" disabled>Enviando…</button>
+      </div>
+    </section>
+
+    <section class="muestra">
+      <h2>Catálogo</h2>
+      <div class="catalogo">
+        <a class="tarjeta" href="#">
+          <img class="tarjeta__miniatura" src="/img/estatica.svg" alt="" loading="lazy">
+          <span class="tarjeta__titulo">La cinta del ático</span>
+          <span class="meta">R: 42 · I: 7</span>
+          <span class="tarjeta__extracto">Encontré una cinta sin etiqueta en una caja del ático. Veinte minutos de estática y luego un pasillo.</span>
+        </a>
+        <a class="tarjeta" href="#">
+          <img class="tarjeta__miniatura" src="/img/estatica.svg" alt="" loading="lazy">
+          <span class="tarjeta__titulo">Canal 0 a las 3:33</span>
+          <span class="meta">R: 13 · I: 2</span>
+          <span class="tarjeta__extracto">Mi tele vieja sintoniza un canal que no existe. Solo a esa hora.</span>
+        </a>
+        <a class="tarjeta" href="#">
+          <div class="tarjeta__miniatura esqueleto"></div>
+          <span class="esqueleto" style="height: 1.2em"></span>
+          <span class="esqueleto" style="height: 0.8em; width: 50%"></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="muestra">
+      <h2>Vacío y paginación</h2>
+      <div class="sin-senal">
+        <p class="sin-senal__titulo">SIN SEÑAL</p>
+        <p>Sé el primero en abrir un hilo.</p>
+      </div>
+      <nav class="paginacion" aria-label="Páginas" style="margin-top: var(--e-4)">
+        <span aria-current="page">1</span>
+        <a href="#">2</a>
+        <a href="#">3</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="contenedor pie">foro_chan · anónimo · sin cuentas · sin registros de IP</footer>
+</body>
+</html>

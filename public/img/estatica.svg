@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240" viewBox="0 0 320 240">
+  <filter id="ruido">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer>
+  </filter>
+  <rect width="320" height="240" fill="#151516"/>
+  <rect width="320" height="240" filter="url(#ruido)"/>
+  <rect y="150" width="320" height="10" fill="#d6d2c8" opacity="0.06"/>
+  <text x="160" y="128" fill="#7d7a73" font-family="monospace" font-size="18" text-anchor="middle" letter-spacing="3">SIN SEÑAL</text>
+</svg>
