@@ -706,3 +706,16 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 767px) {
   .video { float: none; margin-right: 0; }
 }
+
+/* F5: interruptor de sonido en el pie */
+.pie__sonido {
+  min-height: var(--toque);
+  padding: 0 var(--e-2);
+  background: none;
+  border: 0;
+  color: var(--c-meta);
+  font: inherit;
+  cursor: pointer;
+}
+.pie__sonido:hover,
+.pie__sonido[aria-pressed="true"] { color: var(--c-texto); }

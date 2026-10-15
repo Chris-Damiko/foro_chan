@@ -144,3 +144,14 @@ html::after {
   }
   html::after { display: none; }
 }
+
+/* F5: salida de página (la activa js/efectos.js al seguir un enlace interno) */
+body.saliendo main,
+body.saliendo .barra {
+  animation: salida 160ms steps(4) forwards;
+}
+@keyframes salida {
+  0%   { opacity: 1; transform: none; filter: none; }
+  50%  { opacity: 0.7; transform: translateX(4px) skewX(-6deg); filter: blur(1px) contrast(1.4); }
+  100% { opacity: 0; transform: translateX(-8px) scaleY(0.02); filter: blur(2px); }
+}
