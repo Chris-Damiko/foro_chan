@@ -19,11 +19,12 @@ PATHS.uploads = path.join(PATHS.data, 'uploads');
  * @param {object} [deps]
  * @param {object} [deps.store] almacenamiento de src/storage.js; sin él solo existe /api/health.
  * @param {string} [deps.salt] sal secreta para los anonId.
+ * @param {string} [deps.tripSecret] secreto para los tripcodes.
  * @param {string} [deps.adminToken] token para las rutas de admin; sin él, responden 401.
  * @param {string} [deps.uploadsDir] carpeta de imágenes; por defecto data/uploads.
  * @param {object} [deps.rateLimits] esperas por acción en ms (ver rateLimit.js); {} lo desactiva.
  */
-export function createApp({ store, salt, adminToken, uploadsDir = PATHS.uploads, rateLimits = DEFAULT_LIMITS } = {}) {
+export function createApp({ store, salt, tripSecret, adminToken, uploadsDir = PATHS.uploads, rateLimits = DEFAULT_LIMITS } = {}) {
   const app = express();
 
   app.disable('x-powered-by');
@@ -49,7 +50,7 @@ export function createApp({ store, salt, adminToken, uploadsDir = PATHS.uploads,
   });
   const limiter = createRateLimiter(rateLimits);
   if (store) {
-    api.use(threadsRouter({ store, salt, limiter, adminToken, uploadsDir }));
+    api.use(threadsRouter({ store, salt, tripSecret, limiter, adminToken, uploadsDir }));
     api.use(
       moderationRouter({ store, limiter, adminToken, onDeleteImages: (images) => deleteImages(uploadsDir, images) }),
     );

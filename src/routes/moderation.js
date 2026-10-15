@@ -1,6 +1,7 @@
 import express from 'express';
 import { requireAdmin } from '../admin.js';
 import { cleanText, httpError } from '../text.js';
+import { normalizeTripcode } from '../tripcode.js';
 
 const MAX_REASON = 500;
 
@@ -80,6 +81,23 @@ export function moderationRouter({ store, limiter, adminToken, onDeleteImages = 
       return removed;
     });
     await onDeleteImages(images);
+    res.json({ ok: true });
+  });
+
+  router.post('/admin/tripcodes/:trip/ban', admin, async (req, res) => {
+    const trip = normalizeTripcode(req.params.trip);
+    await store.update((db) => {
+      db.bannedTripcodes ??= [];
+      if (!db.bannedTripcodes.includes(trip)) db.bannedTripcodes.push(trip);
+    });
+    res.json({ ok: true });
+  });
+
+  router.delete('/admin/tripcodes/:trip/ban', admin, async (req, res) => {
+    const trip = normalizeTripcode(req.params.trip);
+    await store.update((db) => {
+      db.bannedTripcodes = (db.bannedTripcodes ?? []).filter((t) => t !== trip);
+    });
     res.json({ ok: true });
   });
 

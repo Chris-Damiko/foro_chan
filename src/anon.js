@@ -3,22 +3,25 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 /**
- * Sal secreta para los anonId. Viene de ANON_SALT o se genera una vez y se guarda
- * en data/.salt, así los anonId no cambian al reiniciar el servidor.
+ * Secreto del servidor: viene de la variable de entorno `envVar` o se genera una vez
+ * y se guarda en data/<fileName>, así no cambia al reiniciar.
  */
-export async function loadSalt(dataDir) {
-  if (process.env.ANON_SALT) return process.env.ANON_SALT;
-  const file = path.join(dataDir, '.salt');
+export async function loadSecret(dataDir, fileName, envVar) {
+  if (process.env[envVar]) return process.env[envVar];
+  const file = path.join(dataDir, fileName);
   try {
     return (await fs.readFile(file, 'utf8')).trim();
   } catch (err) {
     if (err.code !== 'ENOENT') throw err;
-    const salt = crypto.randomBytes(32).toString('hex');
+    const secret = crypto.randomBytes(32).toString('hex');
     await fs.mkdir(dataDir, { recursive: true });
-    await fs.writeFile(file, salt, { mode: 0o600 });
-    return salt;
+    await fs.writeFile(file, secret, { mode: 0o600 });
+    return secret;
   }
 }
+
+/** Sal para los anonId (ANON_SALT o data/.salt). */
+export const loadSalt = (dataDir) => loadSecret(dataDir, '.salt', 'ANON_SALT');
 
 /** 8 caracteres, igual para la misma IP dentro de un hilo y distinto entre hilos. La IP no se guarda. */
 export function anonId(ip, threadId, salt) {
