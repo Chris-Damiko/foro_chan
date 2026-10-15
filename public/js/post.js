@@ -1,6 +1,7 @@
 // Pinta un post (OP o respuesta) como <article class="post">.
 // Lo usan la vista de hilo (F3) y, más adelante, el panel admin (F6).
 import { cuerpoANodos, desescapar, fechaCorta, tamano } from './texto.js';
+import { avatarDeTripcode } from './avatar.js';
 import { el } from './ui.js';
 
 const EXTENSIONES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/gif': 'gif', 'image/webp': 'webp' };
@@ -21,6 +22,7 @@ export function pintarPost(post, { esOp = false, enlaceCita } = {}) {
   article.append(
     el('header', { class: 'post__cabecera' },
       esOp && post.title ? el('h1', { class: 'titulo-hilo glitch' }, desescapar(post.title)) : null,
+      post.tripcode ? avatarDeTripcode(post.tripcode, 28) : null,
       el('span', { class: 'post__anon' }, post.name ? desescapar(post.name) : 'Anónimo'),
       post.tripcode ? el('span', { class: 'post__trip', title: 'Firma (tripcode)' }, post.tripcode) : null,
       el('span', {}, `ID:${post.anonId}`),

@@ -512,3 +512,6 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 479px) {
   .cara__ojos { grid-template-columns: 1fr; }
 }
+
+/* Avatar generado del tripcode (F8) */
+.avatar { display: inline-block; align-self: center; border: 1px solid var(--c-borde); image-rendering: pixelated; }
