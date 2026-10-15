@@ -1,5 +1,5 @@
 // Piezas de interfaz compartidas por todas las páginas.
-import { NOMBRES_ESTADO } from './texto.js';
+import { desescapar, NOMBRES_ESTADO } from './texto.js';
 
 export const NOMBRE_SITIO = 'DearDross';
 
@@ -86,4 +86,35 @@ export function conectarContador(input) {
   const actualizar = () => { contador.textContent = `${input.value.length} / ${max}`; };
   input.addEventListener('input', actualizar);
   actualizar();
+}
+
+/** Solo enlaces https a YouTube (Thread.video.url no viene escapado). */
+export function urlYoutubeSegura(url) {
+  try {
+    const u = new URL(url);
+    const hosts = ['www.youtube.com', 'youtube.com', 'm.youtube.com', 'youtu.be'];
+    return u.protocol === 'https:' && hosts.includes(u.hostname) ? u.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Tarjeta de catálogo para un hilo (tablero y portada). Los hilos de video usan su miniatura local. */
+export function tarjetaHilo(hilo, { grande = false } = {}) {
+  const miniatura = el('img', {
+    class: 'tarjeta__miniatura',
+    src: hilo.video?.thumbUrl || hilo.image?.thumbUrl || '/img/estatica.svg',
+    alt: '',
+    loading: 'lazy',
+  });
+  const clases = ['tarjeta'];
+  if (hilo.video) clases.push('tarjeta--video');
+  if (grande) clases.push('tarjeta--grande');
+  return el('a', { class: clases.join(' '), href: urlHilo(hilo.id) },
+    miniatura,
+    hilo.status ? insigniaEstado(hilo.status) : null,
+    el('span', { class: 'tarjeta__titulo' }, desescapar(hilo.title)),
+    el('span', { class: 'meta' }, `R: ${hilo.replyCount} · No.${hilo.id}`),
+    hilo.video ? null : el('span', { class: 'tarjeta__extracto' }, desescapar(hilo.body)),
+  );
 }

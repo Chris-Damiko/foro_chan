@@ -6,10 +6,11 @@ import { conectarTerminos } from './terminos.js';
 import { desescapar } from './texto.js';
 import {
   conectarContador, el, errorDeCampo, insigniaEstado, NOMBRE_SITIO,
-  pintarBarra, sinSenal, urlHilo, urlTablero,
+  pintarBarra, sinSenal, tarjetaHilo, urlHilo, urlTablero,
 } from './ui.js';
 
 const MAX_FUENTES = 10;
+const TABLERO_VIDEOS = 'qd';
 
 const params = new URLSearchParams(location.search);
 const tableroId = params.get('b');
@@ -38,7 +39,12 @@ async function iniciar() {
   }
 
   pintarCabecera(tablero ? `/${tablero.id}/ · ${tablero.name}` : `/${tableroId}/`, tablero?.description ?? '');
-  prepararFormulario();
+  if (tableroId === TABLERO_VIDEOS) {
+    // En Querido Dross los hilos los crea el sistema (uno por video): sin "Nuevo hilo".
+    document.getElementById('nuevo-hilo').hidden = true;
+  } else {
+    prepararFormulario();
+  }
   if (resHilos.ok) {
     pintarCatalogo(resHilos.data.threads);
     pintarPaginacion(resHilos.data.page, resHilos.data.totalPages);
@@ -68,24 +74,7 @@ function pintarCatalogo(hilos) {
     catalogo.replaceChildren(sinSenal('Sé el primero en abrir un hilo.'));
     return;
   }
-  catalogo.replaceChildren(...hilos.map(tarjeta));
-}
-
-function tarjeta(hilo) {
-  const miniatura = el('img', {
-    class: 'tarjeta__miniatura',
-    src: hilo.image?.thumbUrl ?? '/img/estatica.svg',
-    alt: '',
-    loading: 'lazy',
-  });
-  const respuestas = `R: ${hilo.replyCount}`;
-  return el('a', { class: 'tarjeta', href: urlHilo(hilo.id) },
-    miniatura,
-    hilo.status ? insigniaEstado(hilo.status) : null,
-    el('span', { class: 'tarjeta__titulo' }, desescapar(hilo.title)),
-    el('span', { class: 'meta' }, `${respuestas} · No.${hilo.id}`),
-    el('span', { class: 'tarjeta__extracto' }, desescapar(hilo.body)),
-  );
+  catalogo.replaceChildren(...hilos.map((h) => tarjetaHilo(h)));
 }
 
 function pintarPaginacion(actual, total) {
