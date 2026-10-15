@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { threadsRouter } from './routes/threads.js';
+import { createRateLimiter, DEFAULT_LIMITS } from './rateLimit.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -16,13 +17,25 @@ PATHS.uploads = path.join(PATHS.data, 'uploads');
  * @param {object} [deps]
  * @param {object} [deps.store] almacenamiento de src/storage.js; sin él solo existe /api/health.
  * @param {string} [deps.salt] sal secreta para los anonId.
+ * @param {object} [deps.rateLimits] esperas por acción en ms (ver rateLimit.js); {} lo desactiva.
  */
-export function createApp({ store, salt } = {}) {
+export function createApp({ store, salt, rateLimits = DEFAULT_LIMITS } = {}) {
   const app = express();
 
   app.disable('x-powered-by');
   // Detrás de un proxy (Nginx, Vercel, etc.) req.ip debe venir de X-Forwarded-For.
   if (process.env.TRUST_PROXY) app.set('trust proxy', process.env.TRUST_PROXY);
+
+  // Cabeceras básicas: no adivinar tipos (importante para /uploads), no filtrar
+  // de qué hilo viene un visitante al seguir un link, no dejar que nos embeban.
+  app.use((req, res, next) => {
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'no-referrer',
+      'X-Frame-Options': 'DENY',
+    });
+    next();
+  });
 
   app.use(express.json({ limit: '64kb' }));
 
@@ -30,7 +43,8 @@ export function createApp({ store, salt } = {}) {
   api.get('/health', (req, res) => {
     res.json({ ok: true });
   });
-  if (store) api.use(threadsRouter({ store, salt }));
+  const limiter = createRateLimiter(rateLimits);
+  if (store) api.use(threadsRouter({ store, salt, limiter }));
   api.use((req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });
   });
@@ -48,6 +62,7 @@ export function createApp({ store, salt } = {}) {
     if (status >= 500) message = 'Error interno';
     else if (status === 404) message = 'No encontrado';
     else if (err.type === 'entity.parse.failed') message = 'JSON inválido';
+    if (err.retryAfter) res.set('Retry-After', String(err.retryAfter));
     res.status(status).json({ error: message });
   });
 

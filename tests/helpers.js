@@ -5,10 +5,10 @@ import { createApp } from '../src/app.js';
 import { createStore } from '../src/storage.js';
 
 /** Levanta la app completa con datos en una carpeta temporal. */
-export async function startTestServer() {
+export async function startTestServer({ rateLimits = {} } = {}) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'foro-chan-'));
   const store = await createStore({ dir });
-  const server = createApp({ store, salt: 'sal-de-prueba' }).listen(0);
+  const server = createApp({ store, salt: 'sal-de-prueba', rateLimits }).listen(0);
   await new Promise((resolve) => server.once('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
 
@@ -18,7 +18,7 @@ export async function startTestServer() {
       headers: body === undefined ? {} : { 'content-type': 'application/json' },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
-    return { status: res.status, body: await res.json() };
+    return { status: res.status, headers: res.headers, body: await res.json() };
   };
 
   return {

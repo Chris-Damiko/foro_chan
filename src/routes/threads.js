@@ -27,7 +27,7 @@ function summarize(thread) {
   return { ...thread, body };
 }
 
-export function threadsRouter({ store, salt }) {
+export function threadsRouter({ store, salt, limiter }) {
   const router = express.Router();
   const findThread = (id) => {
     const thread = store.data.threads.find((t) => t.id === id);
@@ -57,11 +57,21 @@ export function threadsRouter({ store, salt }) {
 
   router.post('/boards/:board/threads', async (req, res) => {
     const board = findBoard(req.params.board);
+    const undo = limiter.take('thread', req.ip);
+    try {
+      res.status(201).json(await createThread(board, req));
+    } catch (err) {
+      undo();
+      throw err;
+    }
+  });
+
+  async function createThread(board, req) {
     const input = req.body ?? {};
     const title = cleanText(input.title, { field: 'title', max: LIMITS.title });
     const body = cleanText(input.body, { field: 'body', max: LIMITS.body });
 
-    const thread = await store.update((db) => {
+    return store.update((db) => {
       const id = store.nextId();
       const now = new Date().toISOString();
       const t = {
@@ -77,8 +87,7 @@ export function threadsRouter({ store, salt }) {
       db.threads.push(t);
       return t;
     });
-    res.status(201).json(thread);
-  });
+  }
 
   router.get('/threads/:id', (req, res) => {
     const thread = findThread(parseId(req.params.id));
@@ -89,10 +98,20 @@ export function threadsRouter({ store, salt }) {
   router.post('/threads/:id/replies', async (req, res) => {
     const threadId = parseId(req.params.id);
     findThread(threadId);
+    const undo = limiter.take('reply', req.ip);
+    try {
+      res.status(201).json(await createReply(threadId, req));
+    } catch (err) {
+      undo();
+      throw err;
+    }
+  });
+
+  async function createReply(threadId, req) {
     const input = req.body ?? {};
     const body = cleanText(input.body, { field: 'body', max: LIMITS.body });
 
-    const post = await store.update((db) => {
+    return store.update((db) => {
       // Buscar de nuevo dentro de la cola: el hilo pudo borrarse mientras esperábamos.
       const thread = db.threads.find((t) => t.id === threadId);
       if (!thread) throw httpError(404, 'No encontrado');
@@ -109,8 +128,7 @@ export function threadsRouter({ store, salt }) {
       thread.bumpedAt = now;
       return p;
     });
-    res.status(201).json(post);
-  });
+  }
 
   return router;
 }

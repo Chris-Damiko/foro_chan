@@ -40,3 +40,10 @@ test('/uploads inexistente devuelve 404 sin exponer rutas del disco', async () =
   assert.equal(res.status, 404);
   assert.deepEqual(await res.json(), { error: 'No encontrado' });
 });
+
+test('cabeceras de seguridad en todas las respuestas', async () => {
+  const res = await fetch(`${base}/api/health`);
+  assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal(res.headers.get('referrer-policy'), 'no-referrer');
+  assert.equal(res.headers.get('x-frame-options'), 'DENY');
+});
