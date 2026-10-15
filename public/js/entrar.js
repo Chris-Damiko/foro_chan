@@ -12,6 +12,20 @@ const recordar = document.getElementById('e-recordar');
 const ayuda = document.getElementById('ayuda-entrar');
 const error = document.getElementById('e-error');
 const estado = document.getElementById('estado');
+const icono = document.querySelector('.incognito');
+
+/** Pone una clase de animación un momento y la quita (se puede repetir). */
+function pulso(nodo, clase, ms) {
+  nodo.classList.remove(clase);
+  void nodo.offsetWidth; // reinicia la animación si ya estaba
+  nodo.classList.add(clase);
+  setTimeout(() => nodo.classList.remove(clase), ms);
+}
+
+// Glitch en el lente donde se escribe.
+for (const input of [usuario, clave]) {
+  input.addEventListener('input', () => pulso(input.closest('.gafas__lente'), 'gafas__lente--glitch', 180));
+}
 
 const AYUDA = {
   identidad: 'Elige un nombre y una clave. Se guardan solo en este navegador. La clave firma tus posts con un tripcode y el servidor nunca la guarda.',
@@ -91,6 +105,7 @@ form.addEventListener('submit', async (evento) => {
     const valor = secreto ? `${nombre}#${secreto}` : nombre;
     if (!guardarIdentidad(valor, recordar.checked)) return mostrarError('Este navegador no deja guardar datos (¿modo privado?).');
     clave.value = '';
+    celebrar();
     pintarEstado();
     return;
   }
@@ -106,10 +121,16 @@ form.addEventListener('submit', async (evento) => {
   texto.textContent = 'ENTRAR';
   clave.value = '';
   if (!res.ok) return mostrarError(res.status === 401 ? 'Contraseña incorrecta.' : res.error);
+  celebrar();
   pintarEstado();
 });
 
 function mostrarError(mensaje) {
   error.textContent = mensaje;
   error.hidden = false;
+  pulso(icono, 'incognito--error', 600);
+}
+
+function celebrar() {
+  pulso(icono, 'incognito--ok', 900);
 }

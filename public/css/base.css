@@ -518,7 +518,6 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .gabardina__tela { fill: var(--c-superficie); stroke: var(--c-texto); stroke-width: 3; stroke-linejoin: round; transition: fill var(--dur-rapida) var(--curva); }
 .gabardina__solapa { fill: var(--c-fondo); stroke: var(--c-texto); stroke-width: 3; stroke-linejoin: round; }
 .gabardina__linea { fill: none; stroke: var(--c-texto); stroke-width: 2; }
-.gabardina__boton { fill: var(--c-texto); }
 .gabardina__texto {
   position: absolute;
   left: 0;
@@ -589,3 +588,98 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .admin-estado .campo__ayuda { flex-basis: 100%; }
 .admin-reporte { display: grid; gap: var(--e-3); }
 .admin-motivo { font-weight: 600; }
+
+/* ---------- F5: animaciones del login (ícono de incógnito) ----------
+   Solo transform, opacity, filter y stroke-dashoffset. El estado sin animación es
+   el final (visible): con prefers-reduced-motion todo queda quieto y legible. */
+
+/* OSD de videocámara: "▶ PLAY" al entrar, luego "● REC" parpadeando */
+.osd {
+  top: 0;
+  left: 0;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  color: var(--c-texto);
+}
+.osd__play { animation: osd-play 1.6s steps(1) both; }
+.osd__rec { color: var(--c-acento-claro); opacity: 0; animation: osd-rec 1.2s steps(1) 1.6s infinite; }
+@keyframes osd-play { 0%, 99% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes osd-rec { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.15; } }
+
+/* 1. El sombrero cae y rebota */
+.incognito__sombrero { animation: sombrero-cae 0.7s cubic-bezier(0.3, 1.4, 0.5, 1) 0.25s both; }
+@keyframes sombrero-cae {
+  0% { opacity: 0; transform: translateY(-70%) rotate(-8deg); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: none; }
+}
+
+/* 2. Las gafas se encienden como un televisor viejo */
+.gafas { animation: gafas-encienden 0.5s steps(5) 0.85s both; }
+@keyframes gafas-encienden {
+  0% { opacity: 0; transform: scaleY(0.05); filter: brightness(3); }
+  40% { opacity: 1; transform: scaleY(0.05); }
+  60% { opacity: 0.3; transform: scaleY(1); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+
+/* 3. La gabardina se dibuja trazo a trazo y luego se rellena */
+.gabardina__tela,
+.gabardina__solapa,
+.gabardina__linea {
+  stroke-dasharray: 1;
+  animation: trazo 0.9s ease-out 1.2s both;
+}
+.gabardina__tela { animation-name: trazo, tela; animation-duration: 0.9s, 0.4s; animation-delay: 1.2s, 1.9s; }
+@keyframes trazo { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes tela { from { fill-opacity: 0; } to { fill-opacity: 1; } }
+.gabardina__texto { animation: aparece 0.3s steps(3) 2.1s both; }
+@keyframes aparece { from { opacity: 0; } to { opacity: 1; } }
+
+/* 4. En reposo: un reflejo cruza los lentes y el ícono hace glitch de vez en cuando */
+.gafas__lente { position: relative; overflow: hidden; }
+.gafas__lente::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 35%, rgb(214 210 200 / 0.28) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: reflejo 6s ease-in-out 2.6s infinite;
+}
+.gafas__lente:last-child::after { animation-delay: 2.75s; }
+@keyframes reflejo { 0%, 80% { transform: translateX(-120%); } 95%, 100% { transform: translateX(120%); } }
+
+.incognito { animation: icono-glitch 7s steps(1) 3s infinite; }
+@keyframes icono-glitch {
+  0%, 94%, 100% { transform: none; filter: none; }
+  95% { transform: translateX(3px) skewX(-3deg); filter: drop-shadow(-3px 0 var(--c-vhs-cian)) drop-shadow(3px 0 var(--c-vhs-rojo)); }
+  96.5% { transform: translateX(-2px); filter: drop-shadow(2px 0 var(--c-vhs-cian)) drop-shadow(-2px 0 var(--c-vhs-rojo)); }
+  98% { transform: none; filter: none; }
+}
+
+/* 5. Al escribir: el lente parpadea con desfase cromático */
+.gafas__lente--glitch { animation: lente-glitch 0.18s steps(2); }
+@keyframes lente-glitch {
+  0% { transform: translateX(2px); filter: drop-shadow(-2px 0 var(--c-vhs-cian)) drop-shadow(2px 0 var(--c-vhs-rojo)); }
+  100% { transform: none; filter: none; }
+}
+
+/* 6. Error: el ícono niega con la cabeza y se tiñe de rojo. Acierto: las gafas brillan. */
+.incognito--error { animation: niega 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+.incognito--error .gabardina__tela { fill: var(--c-acento); }
+@keyframes niega {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-8px); }
+  40%, 60% { transform: translateX(8px); }
+}
+.incognito--ok .gafas .gafas__lente input { animation: brillo 0.9s ease-out; }
+@keyframes brillo {
+  0% { filter: none; }
+  30% { filter: brightness(2.2) drop-shadow(0 0 6px var(--c-texto)); }
+  100% { filter: none; }
+}
