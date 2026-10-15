@@ -153,7 +153,7 @@ test('corazones: video sin corazones queda con []; un error no rompe el resto', 
   assert.equal(created.length, 2);
 });
 
-test('videosToRefresh: nunca leídos, los 5 más nuevos y los de hace más de una semana', () => {
+test('videosToRefresh: nunca leídos, los 5 más nuevos y los de hace más de una semana, del más nuevo al más viejo', () => {
   const now = Date.parse('2026-10-14T00:00:00Z');
   const mk = (id, day, heartedAt) => ({
     id,
@@ -167,5 +167,5 @@ test('videosToRefresh: nunca leídos, los 5 más nuevos y los de hace más de un
     mk(5, 5, fresh), mk(6, 6, fresh), mk(7, 7, fresh), mk(8, 8, fresh), mk(9, 9, fresh),
     { id: 10, board: 'conf' },
   ];
-  assert.deepEqual(videosToRefresh(threads, now).map((t) => t.id), [3, 4, 5, 6, 7, 8, 9]);
+  assert.deepEqual(videosToRefresh(threads, now).map((t) => t.id), [9, 8, 7, 6, 5, 4, 3]);
 });
