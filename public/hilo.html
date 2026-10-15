@@ -65,6 +65,22 @@
     </div>
   </main>
 
+  <dialog class="dialogo" id="dialogo-reporte" aria-labelledby="rep-titulo">
+    <form class="formulario" id="form-reporte" method="dialog" novalidate>
+      <h2 class="panel__titulo" id="rep-titulo">Reportar <span id="rep-num"></span></h2>
+      <div class="campo">
+        <label for="rep-motivo">Motivo</label>
+        <textarea id="rep-motivo" maxlength="500" rows="3" placeholder="Ej.: publica el teléfono de alguien"></textarea>
+        <span class="campo__ayuda">Lee las <a href="/reglas.html" target="_blank">reglas</a>. Los reportes los ve solo la moderación.</span>
+      </div>
+      <p class="campo__error" id="rep-error" role="alert" hidden></p>
+      <div class="formulario__acciones">
+        <button class="btn btn--primario" type="submit">Enviar reporte</button>
+        <button class="btn btn--texto" type="button" id="rep-cancelar">Cancelar</button>
+      </div>
+    </form>
+  </dialog>
+
   <footer class="contenedor pie">DearDross · anónimo · sin cuentas · sin registros de IP</footer>
 </body>
 </html>

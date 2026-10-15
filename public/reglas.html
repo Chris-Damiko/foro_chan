@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reglas y términos · DearDross</title>
+  <link rel="preload" href="/fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/efectos.css">
+  <script type="module">
+    import { obtenerTableros } from '/js/api.js';
+    import { pintarBarra } from '/js/ui.js';
+    obtenerTableros().then((res) => res.ok && pintarBarra(res.data));
+  </script>
+</head>
+<body>
+  <div class="vineta" aria-hidden="true"></div>
+
+  <header class="contenedor barra">
+    <a class="barra__logo glitch" href="/">DearDross</a>
+  </header>
+
+  <main class="contenedor entrada texto-largo">
+    <h1 class="titulo-tablero">Reglas</h1>
+
+    <ol class="reglas">
+      <li><strong>Nada de datos personales.</strong> No publiques nombres reales, teléfonos, direcciones, correos, fotos ni ningún dato que identifique a una persona privada o a una víctima. Esto incluye a quien te lo contó. Los posts con datos personales se borran y la firma puede quedar bloqueada.</li>
+      <li><strong>Casos con fuentes.</strong> Todo hilo del tablero Casos lleva al menos un enlace de fuente. Lo que no tenga fuente es opinión: dilo así.</li>
+      <li><strong>Sin acoso.</strong> No organices ataques, campañas ni mensajes contra nadie, dentro o fuera del sitio.</li>
+      <li><strong>Nada ilegal.</strong> Ni contenido sexual con menores, ni amenazas, ni incitación a la violencia. Se borra y se denuncia.</li>
+      <li><strong>Reporta lo que rompa las reglas.</strong> Cada post tiene un botón Reportar. La moderación revisa los reportes y puede borrar posts o bloquear firmas.</li>
+    </ol>
+
+    <h2 class="titulo-tablero" id="terminos">Términos</h2>
+
+    <div class="texto-largo__cuerpo">
+      <p><strong>Qué guardamos.</strong> El texto, las imágenes y la fecha de lo que publicas. Las imágenes se guardan sin metadatos (EXIF, ubicación GPS) y sin su nombre original. Tu IP nunca se guarda en claro: solo se usa, mezclada con una sal secreta, para calcular el ID anónimo de cada hilo y para frenar el spam.</p>
+      <p><strong>Sin cuentas.</strong> No hay usuarios ni contraseñas en el servidor. Si usas una identidad (<code>nombre#clave</code>), se guarda solo en tu navegador. El servidor convierte la clave en una firma (tripcode) y no guarda la clave. Si la pierdes, nadie puede recuperarla.</p>
+      <p><strong>Lo que publicas es público.</strong> Cualquiera puede leerlo. Piensa antes de contar algo que te identifique a ti o a otra persona.</p>
+      <p><strong>Moderación.</strong> Podemos borrar cualquier post y bloquear cualquier firma que rompa estas reglas, sin aviso.</p>
+      <p><strong>Sin garantías.</strong> El sitio puede cambiar, caerse o cerrar. Guarda tú lo que no quieras perder.</p>
+    </div>
+
+    <p class="aviso">Al marcar "Leí y acepto" antes de tu primer post, aceptas estas reglas y términos. Ese "acepto" se recuerda solo en tu navegador.</p>
+  </main>
+
+  <footer class="contenedor pie">DearDross · anónimo · sin cuentas · sin registros de IP</footer>
+</body>
+</html>

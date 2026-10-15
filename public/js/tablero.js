@@ -2,6 +2,7 @@
 import { crearHilo, obtenerHilos, obtenerTableros } from './api.js';
 import { conectarVistaPrevia, enviando, validarImagen } from './formulario.js';
 import { nombreParaPublicar, prepararCampoNombre } from './identidad.js';
+import { conectarTerminos } from './terminos.js';
 import { desescapar } from './texto.js';
 import {
   conectarContador, el, errorDeCampo, insigniaEstado, NOMBRE_SITIO,
@@ -112,11 +113,12 @@ function prepararFormulario() {
 
   conectarVistaPrevia(document.getElementById('f-imagen'), document.getElementById('vista-previa'));
   prepararCampoNombre(document.getElementById('f-nombre'));
+  const terminosOk = conectarTerminos(form.querySelector('.formulario__acciones'));
 
   form.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     const datos = leerFormulario(form, esCasos);
-    if (!datos) return;
+    if (!datos || !terminosOk()) return;
 
     const errorGeneral = document.getElementById('error-general');
     const restaurar = enviando(form.querySelector('button[type="submit"]'));

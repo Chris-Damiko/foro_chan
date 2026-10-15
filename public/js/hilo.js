@@ -1,7 +1,8 @@
 // Vista de hilo (F3) con panel de caso (F4): posts, citas, respuestas y fuentes.
-import { obtenerHilo, obtenerTableros, responder } from './api.js';
+import { obtenerHilo, obtenerTableros, reportar, responder } from './api.js';
 import { conectarVistaPrevia, enviando } from './formulario.js';
 import { nombreParaPublicar, prepararCampoNombre } from './identidad.js';
+import { conectarTerminos } from './terminos.js';
 import { citasDe, pintarPost } from './post.js';
 import { desescapar, fechaCorta } from './texto.js';
 import {
@@ -124,6 +125,11 @@ function resaltar(idAncla) {
 /** Clic en No.123 cita el post; hover en >>123 muestra una vista previa. */
 function conectarCitas() {
   contenedorPosts.addEventListener('click', (evento) => {
+    const reporte = evento.target.closest('[data-reportar]');
+    if (reporte) {
+      abrirReporte(reporte.dataset.reportar);
+      return;
+    }
     const citar = evento.target.closest('[data-citar]');
     if (citar) {
       evento.preventDefault();
@@ -175,6 +181,7 @@ function prepararFormulario() {
   const inputImagen = document.getElementById('r-imagen');
   conectarVistaPrevia(inputImagen, document.getElementById('r-vista-previa'));
   prepararCampoNombre(document.getElementById('r-nombre'));
+  const terminosOk = conectarTerminos(form.querySelector('.formulario__acciones'));
 
   form.addEventListener('submit', async (evento) => {
     evento.preventDefault();
@@ -185,7 +192,7 @@ function prepararFormulario() {
 
     const sinNada = !body && !image;
     errorDeCampo(textarea.closest('.campo'), sinNada ? 'Escribe un mensaje o adjunta una imagen.' : null);
-    if (sinNada || inputImagen.closest('.campo').classList.contains('campo--error')) return;
+    if (sinNada || inputImagen.closest('.campo').classList.contains('campo--error') || !terminosOk()) return;
 
     errorGeneral.hidden = true;
     const restaurar = enviando(form.querySelector('button[type="submit"]'));
@@ -205,3 +212,43 @@ function prepararFormulario() {
     await cargar(`#p${res.data.id}`);
   });
 }
+
+/** Ventana de reporte (<dialog>, no alert/confirm del navegador). */
+function abrirReporte(postId) {
+  const dialogo = document.getElementById('dialogo-reporte');
+  const motivo = document.getElementById('rep-motivo');
+  const salida = document.getElementById('rep-error');
+  document.getElementById('rep-num').textContent = `No.${postId}`;
+  motivo.value = '';
+  salida.hidden = true;
+  dialogo.dataset.post = postId;
+  dialogo.showModal();
+  motivo.focus();
+}
+
+const dialogoReporte = document.getElementById('dialogo-reporte');
+document.getElementById('rep-cancelar').addEventListener('click', () => dialogoReporte.close());
+document.getElementById('form-reporte').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  const motivo = document.getElementById('rep-motivo').value.trim();
+  const salida = document.getElementById('rep-error');
+  if (!motivo) {
+    salida.textContent = 'Cuenta brevemente qué regla rompe.';
+    salida.hidden = false;
+    return;
+  }
+  const restaurar = enviando(evento.submitter ?? evento.target.querySelector('[type=submit]'));
+  const res = await reportar(dialogoReporte.dataset.post, motivo);
+  restaurar();
+  if (!res.ok) {
+    salida.textContent = res.status === 404 ? 'Este post ya no existe.' : res.error;
+    salida.hidden = false;
+    return;
+  }
+  dialogoReporte.close();
+  const boton = document.querySelector(`[data-reportar="${dialogoReporte.dataset.post}"]`);
+  if (boton) {
+    boton.textContent = 'reportado';
+    boton.disabled = true;
+  }
+});

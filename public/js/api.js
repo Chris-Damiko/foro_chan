@@ -108,3 +108,24 @@ export async function estadoAdmin() {
   const res = await pedir('/api/admin/reports');
   return res.ok;
 }
+
+export function obtenerReportes() {
+  return pedir('/api/admin/reports');
+}
+
+export function borrarPost(id) {
+  return pedir(`/api/admin/posts/${encodeURIComponent(id)}`, { method: 'DELETE' });
+}
+
+export function cambiarEstado(hiloId, status) {
+  return pedir(`/api/admin/threads/${encodeURIComponent(hiloId)}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+}
+
+/** Bloquea (o desbloquea con `bloquear = false`) una firma "!xxxxxxxxxx". */
+export function bloquearTripcode(tripcode, bloquear = true) {
+  return pedir(`/api/admin/tripcodes/${encodeURIComponent(tripcode)}/ban`, { method: bloquear ? 'POST' : 'DELETE' });
+}
