@@ -45,6 +45,7 @@ export function pintarBarra(tableros, actual = null) {
   barra.replaceChildren(
     el('a', { class: 'barra__logo glitch', href: '/' }, NOMBRE_SITIO),
     nav,
+    el('a', { class: 'barra__entrar mono', href: '/entrar.html' }, '[entrar]'),
   );
 }
 

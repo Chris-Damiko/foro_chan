@@ -1,6 +1,7 @@
 // Vista de hilo (F3) con panel de caso (F4): posts, citas, respuestas y fuentes.
 import { obtenerHilo, obtenerTableros, responder } from './api.js';
 import { conectarVistaPrevia, enviando } from './formulario.js';
+import { nombreParaPublicar, prepararCampoNombre } from './identidad.js';
 import { citasDe, pintarPost } from './post.js';
 import { desescapar, fechaCorta } from './texto.js';
 import {
@@ -173,12 +174,13 @@ function prepararFormulario() {
   form.querySelectorAll('[maxlength]').forEach(conectarContador);
   const inputImagen = document.getElementById('r-imagen');
   conectarVistaPrevia(inputImagen, document.getElementById('r-vista-previa'));
+  prepararCampoNombre(document.getElementById('r-nombre'));
 
   form.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     const body = textarea.value.trim();
     const image = inputImagen.files[0];
-    const name = document.getElementById('r-nombre').value.trim();
+    const name = nombreParaPublicar(document.getElementById('r-nombre'));
     const errorGeneral = document.getElementById('r-error');
 
     const sinNada = !body && !image;

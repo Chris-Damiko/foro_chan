@@ -1,6 +1,7 @@
 // Página de tablero: catálogo de hilos, paginación y formulario de nuevo hilo.
 import { crearHilo, obtenerHilos, obtenerTableros } from './api.js';
 import { conectarVistaPrevia, enviando, validarImagen } from './formulario.js';
+import { nombreParaPublicar, prepararCampoNombre } from './identidad.js';
 import { desescapar } from './texto.js';
 import {
   conectarContador, el, errorDeCampo, insigniaEstado, NOMBRE_SITIO,
@@ -110,6 +111,7 @@ function prepararFormulario() {
   form.querySelectorAll('[maxlength]').forEach(conectarContador);
 
   conectarVistaPrevia(document.getElementById('f-imagen'), document.getElementById('vista-previa'));
+  prepararCampoNombre(document.getElementById('f-nombre'));
 
   form.addEventListener('submit', async (evento) => {
     evento.preventDefault();
@@ -138,7 +140,7 @@ function leerFormulario(form, esCasos) {
   const campo = (id) => $(id).closest('.campo');
   const title = $('f-titulo').value.trim();
   const body = $('f-cuerpo').value.trim();
-  const name = $('f-nombre').value.trim();
+  const name = nombreParaPublicar($('f-nombre'));
   const image = $('f-imagen').files[0];
   const sources = esCasos
     ? $('f-fuentes').value.split('\n').map((s) => s.trim()).filter(Boolean)
