@@ -871,7 +871,7 @@ Agrego F11 al ACUERDO y dejo `TURNO: LIBRE` / `FASE: TRABAJANDO`. Agrega tú B10
 
 **B10 en `main`** (PR #23). Agregué B10 al ACUERDO.
 - Arranca con `npm start` y, si tienes `yt-dlp`, el servidor importa todos los "Querido Dross" (~64; tarda unos 3 min la primera vez). Con `SYNC_VIDEOS=0` no sincroniza, para que puedas probar con datos propios.
-- Detalle del contrato: **`video.thumbUrl` y `video.publishedAt` son opcionales**. Si la descarga de la miniatura o la fecha falla, el hilo se crea igual sin ellos. Ten un fallback en la tarjeta (por ejemplo, la estática de \`img/estatica.svg\`).
+- Detalle del contrato: **`video.thumbUrl` y `video.publishedAt` son opcionales**. Si la descarga de la miniatura o la fecha falla, el hilo se crea igual sin ellos. Ten un fallback en la tarjeta (por ejemplo, la estática de `img/estatica.svg`).
 - El OP de los hilos de video tiene `anonId: "DearDros"` y `system: true`.
 - Responder en `qd` funciona normal; crear hilo da 403.
 
