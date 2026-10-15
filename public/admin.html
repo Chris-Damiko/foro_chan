@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Moderación · DearDross</title>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/efectos.css">
+  <script type="module" src="/js/admin.js"></script>
+</head>
+<body>
+  <div class="vineta" aria-hidden="true"></div>
+
+  <header class="contenedor barra">
+    <a class="barra__logo glitch" href="/">DearDross</a>
+  </header>
+
+  <main class="contenedor">
+    <section class="cabecera-tablero">
+      <h1 class="titulo-tablero">Moderación</h1>
+      <p id="sesion"></p>
+    </section>
+
+    <div id="panel" hidden>
+      <section class="admin-seccion">
+        <h2 class="panel__titulo">Estado de un caso</h2>
+        <form class="admin-estado" id="form-estado" novalidate>
+          <div class="campo">
+            <label for="a-hilo">Hilo No.</label>
+            <input id="a-hilo" type="text" inputmode="numeric" autocomplete="off">
+          </div>
+          <div class="campo">
+            <label for="a-estado">Nuevo estado</label>
+            <select id="a-estado">
+              <option value="abierto">Abierto</option>
+              <option value="en_revision">En revisión</option>
+              <option value="cerrado">Cerrado</option>
+            </select>
+          </div>
+          <button class="btn" type="submit">Cambiar</button>
+          <p class="campo__ayuda" id="a-estado-res" role="status"></p>
+        </form>
+      </section>
+
+      <section class="admin-seccion">
+        <h2 class="panel__titulo">Bloquear o desbloquear firma</h2>
+        <form class="admin-estado" id="form-firma" novalidate>
+          <div class="campo">
+            <label for="a-firma">Tripcode</label>
+            <input id="a-firma" type="text" placeholder="!Ab3dE9xQ2k" autocomplete="off" spellcheck="false">
+          </div>
+          <button class="btn" type="submit" data-accion="bloquear">Bloquear</button>
+          <button class="btn btn--texto" type="submit" data-accion="desbloquear">Desbloquear</button>
+          <p class="campo__ayuda" id="a-firma-res" role="status"></p>
+        </form>
+      </section>
+
+      <section class="admin-seccion">
+        <h2 class="panel__titulo" id="titulo-reportes">Reportes</h2>
+        <div class="pila" id="reportes"></div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

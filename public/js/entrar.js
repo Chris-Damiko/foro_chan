@@ -66,7 +66,7 @@ async function pintarEstado() {
   if (modo !== 'admin') return; // cambió de pestaña mientras esperaba
   estado.hidden = !activo;
   if (activo) {
-    estado.replaceChildren('Sesión de admin activa. ', boton('Cerrar sesión', async () => {
+    estado.replaceChildren('Sesión de admin activa. ', el('a', { href: '/admin.html' }, 'Ir al panel'), ' · ', boton('Cerrar sesión', async () => {
       await salirAdmin();
       pintarEstado();
     }));

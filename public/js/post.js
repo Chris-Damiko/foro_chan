@@ -8,9 +8,9 @@ const EXTENSIONES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/gif': 'gif
 
 /**
  * @param {object} post Post o Thread de la API
- * @param {{ esOp?: boolean, enlaceCita?: (id: number) => string | null }} [opciones]
+ * @param {{ esOp?: boolean, reportable?: boolean, enlaceCita?: (id: number) => string | null }} [opciones]
  */
-export function pintarPost(post, { esOp = false, enlaceCita } = {}) {
+export function pintarPost(post, { esOp = false, reportable = true, enlaceCita } = {}) {
   const clases = ['post'];
   if (esOp) clases.push('post--op');
   if (post.deleted) clases.push('post--borrado');
@@ -28,6 +28,9 @@ export function pintarPost(post, { esOp = false, enlaceCita } = {}) {
       el('span', {}, `ID:${post.anonId}`),
       el('time', { datetime: post.createdAt }, fechaCorta(post.createdAt)),
       el('a', { class: 'post__num', href: `#p${post.id}`, 'data-citar': String(post.id), title: 'Citar este post' }, `No.${post.id}`),
+      reportable && !post.deleted
+        ? el('button', { class: 'post__reportar', type: 'button', 'data-reportar': String(post.id) }, 'reportar')
+        : null,
     ),
     el('div', { class: 'post__cuerpo' },
       post.deleted ? '[borrado]' : cuerpoANodos(post.body, { enlaceCita })),
