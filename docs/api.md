@@ -131,6 +131,9 @@ Al guardar una imagen, el backend borra EXIF/GPS y no guarda el nombre original.
 | GET | `/api/admin/reports` | B5 |
 | DELETE | `/api/admin/posts/:id` | B5 |
 | POST / DELETE | `/api/admin/tripcodes/:trip/ban` | B8 |
+| PATCH | `/api/admin/threads/:id/status` (alias para la cookie) | B9 |
+| POST | `/api/admin/login` | B9 |
+| POST | `/api/admin/logout` | B9 |
 | GET | `/uploads/<archivo>` | B1 (archivos desde B7) |
 
 ### GET /api/health
@@ -220,3 +223,14 @@ Bloquea un tripcode: publicar con esa firma da `403`. `:trip` con o sin `!` (si 
 
 ### DELETE /api/admin/tripcodes/:trip/ban (admin)
 Desbloquea. `200` → `{ "ok": true }`.
+
+### Autenticación del admin
+Las rutas de admin aceptan **una** de estas dos formas:
+- Cookie de sesión `dd_admin` (la crea `/api/admin/login`). Es la que usa el frontend: el navegador la manda sola en las rutas `/api/admin/*`, porque es `HttpOnly`, `SameSite=Strict` y `Path=/api/admin`. Como la cookie solo viaja a `/api/admin/*`, el cambio de estado de un caso también existe como **`PATCH /api/admin/threads/:id/status`** (igual que `PATCH /api/threads/:id/status`). El panel admin debe usar la ruta `/api/admin/...`.
+- Cabecera `x-admin-token: <ADMIN_TOKEN>` (tests y consola).
+
+### POST /api/admin/login
+`{ "password": "<ADMIN_TOKEN>" }` → `200 { "ok": true }` + cookie `dd_admin` (12 h). `401` si la contraseña no coincide. `429` si se repite antes de 3 s (frena la fuerza bruta).
+
+### POST /api/admin/logout
+Borra la sesión y la cookie. `200 { "ok": true }`.

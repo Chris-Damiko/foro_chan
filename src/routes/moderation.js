@@ -1,5 +1,4 @@
 import express from 'express';
-import { requireAdmin } from '../admin.js';
 import { cleanText, httpError } from '../text.js';
 import { normalizeTripcode } from '../tripcode.js';
 
@@ -24,9 +23,9 @@ function findPost(db, id) {
  * Reportes (públicos) y borrado (admin).
  * `onDeleteImages(images)` lo usa B7 para borrar los archivos del disco.
  */
-export function moderationRouter({ store, limiter, adminToken, onDeleteImages = async () => {} }) {
+export function moderationRouter({ store, limiter, requireAdmin, onDeleteImages = async () => {} }) {
   const router = express.Router();
-  const admin = requireAdmin(adminToken);
+  const admin = requireAdmin;
 
   router.post('/posts/:id/report', async (req, res) => {
     const postId = parseId(req.params.id);

@@ -5,6 +5,7 @@ import { threadsRouter } from './routes/threads.js';
 import { moderationRouter } from './routes/moderation.js';
 import { createRateLimiter, DEFAULT_LIMITS } from './rateLimit.js';
 import { deleteImages } from './images.js';
+import { createAdminAuth } from './admin.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -49,10 +50,13 @@ export function createApp({ store, salt, tripSecret, adminToken, uploadsDir = PA
     res.json({ ok: true });
   });
   const limiter = createRateLimiter(rateLimits);
+  const adminAuth = createAdminAuth(adminToken, { limiter });
+  api.use(adminAuth.router);
   if (store) {
-    api.use(threadsRouter({ store, salt, tripSecret, limiter, adminToken, uploadsDir }));
+    const requireAdmin = adminAuth.require;
+    api.use(threadsRouter({ store, salt, tripSecret, limiter, requireAdmin, uploadsDir }));
     api.use(
-      moderationRouter({ store, limiter, adminToken, onDeleteImages: (images) => deleteImages(uploadsDir, images) }),
+      moderationRouter({ store, limiter, requireAdmin, onDeleteImages: (images) => deleteImages(uploadsDir, images) }),
     );
   }
   api.use((req, res) => {
