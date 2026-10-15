@@ -63,6 +63,8 @@ type Thread = {
   image?: Image;
   status?: "abierto" | "en_revision" | "cerrado";  // solo tablero "casos"
   sources?: string[];    // URLs http(s); mínimo 1 en "casos"
+  statusHistory?: { status: "abierto" | "en_revision" | "cerrado"; at: string }[];
+                         // solo "casos", orden cronológico; el primero es "abierto" con at = createdAt
 };
 
 type ThreadSummary = Thread;  // igual, pero body recortado a 300 caracteres
@@ -129,7 +131,7 @@ Al guardar una imagen, el backend borra EXIF/GPS y no guarda el nombre original.
 ```
 
 ### GET /api/boards/:board/threads?page=1
-Catálogo ordenado por `bumpedAt` descendente. 20 hilos por página. `page` empieza en 1.
+Catálogo ordenado por `bumpedAt` descendente. 20 hilos por página. `page` empieza en 1; si falta o no es un número válido se usa 1. Una página mayor que `totalPages` devuelve `threads: []`.
 
 `200` → `{ "threads": ThreadSummary[], "page": 1, "totalPages": 3 }`
 `404` si el tablero no existe.
@@ -150,7 +152,7 @@ Crea un hilo. Dos formatos:
 | `sources` | texto con JSON de un array, ej. `["https://a.com","https://b.com"]` |
 | `image` | archivo (opcional) |
 
-En el tablero `casos`, `sources` es obligatorio (mínimo 1) y el hilo nace con `status: "abierto"`.
+En el tablero `casos`, `sources` es obligatorio (mínimo 1) y el hilo nace con `status: "abierto"` y `statusHistory: [{ "status": "abierto", "at": createdAt }]`.
 
 `201` → `Thread`
 `400`, `404`, `413`, `429` según el caso.
@@ -174,7 +176,7 @@ En el tablero `casos`, `sources` es obligatorio (mínimo 1) y el hilo nace con `
 
 ### PATCH /api/threads/:id/status (admin)
 Header `x-admin-token: <token>`. Body `{ "status": "en_revision" }`.
-Solo hilos del tablero `casos`.
+Solo hilos del tablero `casos`. Cambia `status` y agrega `{ status, at }` al final de `statusHistory`.
 
 `200` → `Thread`
 `400` (status inválido o el hilo no es de `casos`), `401`, `404`.
