@@ -683,3 +683,26 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   30% { filter: brightness(2.2) drop-shadow(0 0 6px var(--c-texto)); }
   100% { filter: none; }
 }
+
+/* ---------- Querido Dross (F11) ---------- */
+.videos { padding-block: var(--e-6) var(--e-8); }
+.videos__cabecera { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--e-3); }
+.videos__cabecera a { color: var(--c-meta); font-size: var(--t-sm); }
+.videos__lema { margin-block: var(--e-2) var(--e-4); color: var(--c-meta); }
+.catalogo--videos { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--e-4); }
+.tarjeta--video .tarjeta__miniatura { aspect-ratio: 16 / 9; }
+.tarjeta--grande .tarjeta__titulo { font-size: 1.5rem; }
+
+.tablero-item--principal { border-color: var(--c-acento); background: linear-gradient(90deg, rgb(155 42 34 / 0.18), var(--c-superficie) 60%); }
+
+.post__anon--sistema { color: var(--c-acento-claro); }
+
+/* Tarjeta del video en el OP: miniatura grande y botón a YouTube */
+.video { float: left; max-width: min(480px, 100%); margin: var(--e-2) var(--e-4) var(--e-3) 0; }
+.video__miniatura { display: block; border: 1px solid var(--c-borde); }
+.video__miniatura img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+.video__miniatura:hover { border-color: var(--c-acento); }
+.video__pie { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--e-2); margin-top: var(--e-2); }
+@media (max-width: 767px) {
+  .video { float: none; margin-right: 0; }
+}

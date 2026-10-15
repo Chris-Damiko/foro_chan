@@ -2,7 +2,7 @@
 // Lo usan la vista de hilo (F3) y, más adelante, el panel admin (F6).
 import { cuerpoANodos, desescapar, fechaCorta, tamano } from './texto.js';
 import { avatarDeTripcode } from './avatar.js';
-import { el } from './ui.js';
+import { el, NOMBRE_SITIO, urlYoutubeSegura } from './ui.js';
 
 const EXTENSIONES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/gif': 'gif', 'image/webp': 'webp' };
 
@@ -17,18 +17,20 @@ export function pintarPost(post, { esOp = false, reportable = true, enlaceCita }
 
   const article = el('article', { class: clases.join(' '), id: `p${post.id}`, 'data-id': String(post.id) });
 
-  if (post.image && !post.deleted) article.append(imagen(post.image));
+  if (post.video && !post.deleted) article.append(tarjetaVideo(post.video));
+  else if (post.image && !post.deleted) article.append(imagen(post.image));
 
   article.append(
     el('header', { class: 'post__cabecera' },
       esOp && post.title ? el('h1', { class: 'titulo-hilo glitch' }, desescapar(post.title)) : null,
       post.tripcode ? avatarDeTripcode(post.tripcode, 28) : null,
-      el('span', { class: 'post__anon' }, post.name ? desescapar(post.name) : 'Anónimo'),
+      el('span', { class: post.system ? 'post__anon post__anon--sistema' : 'post__anon' },
+        post.system ? NOMBRE_SITIO : post.name ? desescapar(post.name) : 'Anónimo'),
       post.tripcode ? el('span', { class: 'post__trip', title: 'Firma (tripcode)' }, post.tripcode) : null,
-      el('span', {}, `ID:${post.anonId}`),
+      post.system ? null : el('span', {}, `ID:${post.anonId}`),
       el('time', { datetime: post.createdAt }, fechaCorta(post.createdAt)),
       el('a', { class: 'post__num', href: `#p${post.id}`, 'data-citar': String(post.id), title: 'Citar este post' }, `No.${post.id}`),
-      reportable && !post.deleted
+      reportable && !post.deleted && !post.system
         ? el('button', { class: 'post__reportar', type: 'button', 'data-reportar': String(post.id) }, 'reportar')
         : null,
     ),
@@ -66,6 +68,31 @@ function imagen(img) {
   });
 
   return figura;
+}
+
+/**
+ * Video de "Querido Dross": miniatura local y enlace a YouTube, sin reproductor incrustado
+ * (un iframe le pasaría a Google la IP de cada visitante). thumbUrl y publishedAt son opcionales.
+ */
+function tarjetaVideo(video) {
+  const url = urlYoutubeSegura(video.url);
+  const enlace = (hijo, attrs = {}) => (url
+    ? el('a', { ...attrs, href: url, target: '_blank', rel: 'noopener noreferrer nofollow' }, hijo)
+    : hijo);
+  const miniatura = el('img', {
+    src: video.thumbUrl || '/img/estatica.svg',
+    alt: 'Miniatura del video',
+    loading: 'lazy',
+    width: '480',
+    height: '270',
+  });
+  return el('figure', { class: 'video' },
+    enlace(miniatura, { class: 'video__miniatura' }),
+    el('figcaption', { class: 'video__pie' },
+      video.publishedAt ? el('span', { class: 'meta' }, `Publicado el ${fechaCorta(video.publishedAt).split(' ')[0]}`) : null,
+      url ? enlace('Ver en YouTube', { class: 'btn btn--primario' }) : null,
+    ),
+  );
 }
 
 /** Ids citados (>>123) en un body escapado. */
