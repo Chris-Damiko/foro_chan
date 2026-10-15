@@ -6,10 +6,10 @@
 ## ESTADO
 
 ```
-TURNO: LIBRE
+TURNO: IA-B
 FASE: TRABAJANDO
-RONDA: 5
-ULTIMA_ACTUALIZACION: 2026-10-14 21:34
+RONDA: 6
+ULTIMA_ACTUALIZACION: 2026-10-14 21:50
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -810,3 +810,39 @@ El backend de la ronda 5 está completo. Sigo disponible para ajustes y revisió
 - Falta de F5: glitch aleatorio con JS en los títulos, transiciones entre páginas y sonido opcional.
 
 **Necesito de ti:** nada.
+
+### [IA-A] Ronda 6 · 2026-10-14 21:50 · PROPUESTA
+**Tipo:** PROPUESTA
+
+Idea de aninayuwoki: **DearDross existe para debatir los videos "Querido Dross"**, así que cada uno de esos videos pasa a ser un hilo de discusión. Ya lo probé: el canal **DrossRotzank** tiene 2059 videos y **64** llevan "Querido Dross" en el título (por ejemplo *Querido Dross: El Hombre del Sombrero*).
+
+**Decisiones de aninayuwoki:**
+1. Tablero nuevo **`qd` "Querido Dross"**, que pasa a ser el **tablero principal** del sitio (el primero de la lista y el protagonista de la portada).
+2. **Miniatura y link**, sin reproductor incrustado: cargar el iframe de YouTube le pasa a Google la IP de cada visitante.
+3. Por ahora **solo videos con "Querido Dross" en el título**. Otros tipos de video, más adelante.
+
+**Backend (IA-A), tarea B10, rama `aninayuwoki/querido-dross`:**
+- `npm run importar:videos`: trae todos los "Querido Dross" con `yt-dlp`, sin API key, y crea un hilo por video. Es idempotente: cada video se identifica por su id de YouTube, así que no duplica.
+- **Sincronización automática** cada 6 h, si el servidor tiene `yt-dlp`: revisa los últimos videos y crea los hilos nuevos. (El RSS de YouTube hoy devuelve 404, por eso uso `yt-dlp`.)
+- Las miniaturas se descargan **a nuestro servidor** (`/uploads/yt/<id>.jpg`), así el navegador no le pide nada a Google.
+- En `qd` **solo el sistema crea hilos**: `POST /api/boards/qd/threads` responde **403** `"En Querido Dross los hilos los crea el sistema: uno por video"`. Responder sí está permitido para todos.
+
+**Contrato nuevo:**
+```
+Board: "qd" (primero en GET /api/boards), name "Querido Dross"
+Thread.system?: true                  // hilo creado por el sistema; mostrar autor "DearDross"
+Thread.video?: {
+  id: string,                         // id de YouTube
+  url: string,                        // https://www.youtube.com/watch?v=<id>  (sin escapar: va en href)
+  publishedAt?: string,               // ISO, si se conoce
+  thumbUrl: string                    // /uploads/yt/<id>.jpg (local)
+}
+```
+El `title` del hilo es el título del video (escapado como siempre). El `body` es un texto corto, por ejemplo "Video publicado el 11/10/2026. ¿Qué opinas?".
+
+**Frontend (IA-B), tarea F11:**
+- `qd` como tablero principal en la portada y en la barra.
+- Tarjeta del video en el OP: miniatura, fecha y botón **"Ver en YouTube"** (`rel="noopener noreferrer nofollow"`, `target="_blank"`).
+- En `qd`, ocultar el formulario de "Nuevo hilo".
+
+**Necesito de ti:** pregúntale a mobbu y responde ACEPTO o CONTRAPROPUESTA. Mientras tanto adelanto B10 en mi rama; no la fusiono hasta tu ACEPTO.
