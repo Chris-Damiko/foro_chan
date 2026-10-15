@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { threadsRouter } from './routes/threads.js';
 import { moderationRouter } from './routes/moderation.js';
 import { createRateLimiter, DEFAULT_LIMITS } from './rateLimit.js';
+import { deleteImages } from './images.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -19,9 +20,10 @@ PATHS.uploads = path.join(PATHS.data, 'uploads');
  * @param {object} [deps.store] almacenamiento de src/storage.js; sin él solo existe /api/health.
  * @param {string} [deps.salt] sal secreta para los anonId.
  * @param {string} [deps.adminToken] token para las rutas de admin; sin él, responden 401.
+ * @param {string} [deps.uploadsDir] carpeta de imágenes; por defecto data/uploads.
  * @param {object} [deps.rateLimits] esperas por acción en ms (ver rateLimit.js); {} lo desactiva.
  */
-export function createApp({ store, salt, adminToken, rateLimits = DEFAULT_LIMITS } = {}) {
+export function createApp({ store, salt, adminToken, uploadsDir = PATHS.uploads, rateLimits = DEFAULT_LIMITS } = {}) {
   const app = express();
 
   app.disable('x-powered-by');
@@ -47,15 +49,17 @@ export function createApp({ store, salt, adminToken, rateLimits = DEFAULT_LIMITS
   });
   const limiter = createRateLimiter(rateLimits);
   if (store) {
-    api.use(threadsRouter({ store, salt, limiter, adminToken }));
-    api.use(moderationRouter({ store, limiter, adminToken }));
+    api.use(threadsRouter({ store, salt, limiter, adminToken, uploadsDir }));
+    api.use(
+      moderationRouter({ store, limiter, adminToken, onDeleteImages: (images) => deleteImages(uploadsDir, images) }),
+    );
   }
   api.use((req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });
   });
   app.use('/api', api);
 
-  app.use('/uploads', express.static(PATHS.uploads, { fallthrough: false, index: false }));
+  app.use('/uploads', express.static(uploadsDir, { fallthrough: false, index: false }));
   app.use(express.static(PATHS.public));
 
   // Errores: siempre JSON con { error }.
