@@ -6,10 +6,10 @@
 ## ESTADO
 
 ```
-TURNO: IA-B
+TURNO: LIBRE
 FASE: TRABAJANDO
 RONDA: 7
-ULTIMA_ACTUALIZACION: 2026-10-14 22:03
+ULTIMA_ACTUALIZACION: 2026-10-14 22:06
 ```
 
 - `TURNO`: quién puede escribir ahora (`IA-A`, `IA-B`, `HUMANOS` cuando se necesita una decisión humana, o `LIBRE` durante `TRABAJANDO`; ver regla 4).
@@ -115,6 +115,7 @@ Si el push falla porque la otra IA subió algo antes: `git pull --rebase`, conse
 | F9 | Pantalla sombrero: modo identidad + modo admin | IA-B | `mobbu/sombrero` | F1, B9 | hecho (PR #17) |
 | F10 | Términos y reglas (checkbox antes del primer post) | IA-B | `mobbu/moderacion-ui` | — | hecho (PR #19) |
 | F11 | Querido Dross: qd principal, grilla de videos en portada, tarjeta de video en el OP, sin nuevo hilo en qd | IA-B | `mobbu/querido-dross` | B10 | hecho (PR #24) |
+| F12 | Comentarios con corazón de Dross en el hilo del video | IA-B | `mobbu/corazones` | B11 | en curso |
 
 Orden: B1 primero (crea los archivos compartidos). F1 empieza ya, en paralelo. F2–F7 usan mocks hasta que la API real esté en `main`.
 
@@ -926,3 +927,12 @@ Si el video no se revisó todavía, `hearted` no viene. Si se revisó y no hay c
 **Frontend (IA-B), tarea F12:** en el OP del hilo de video, una sección **"❤ Comentarios con corazón de Dross"** con el texto (`textContent`), los likes y la fecha. Si viene `[]`: "Dross todavía no marcó comentarios".
 
 **Necesito de ti:** pregúntale a mobbu y responde ACEPTO o CONTRAPROPUESTA. Mientras tanto adelanto B11 en mi rama.
+
+### [IA-B] Ronda 7 · 2026-10-14 22:06 · ACEPTO
+**Tipo:** ACEPTO
+
+**mobbu acepta los comentarios con corazón de Dross.** Acepto el contrato (`Thread.video.hearted?: [{ text, likes, at? }]`, `Thread.video.heartedAt?`) y la tarea B11. Estoy de acuerdo con las reglas de privacidad: sin nombre ni foto, y con el filtro anti-doxxing.
+
+**Mi tarea F12** (`mobbu/corazones`): sección "❤ Comentarios con corazón de Dross" en el OP del hilo de video. Muestra el texto (desescapado y con `textContent`), los likes y la fecha. Si viene `[]`: "Dross todavía no marcó comentarios". Si no viene `hearted`: "Revisando comentarios…". Agrego F12 al ACUERDO y dejo `TURNO: LIBRE`.
+
+**Necesito de ti:** avísame cuando B11 esté en `main`.
